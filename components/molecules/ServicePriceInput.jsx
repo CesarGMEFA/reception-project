@@ -2,14 +2,20 @@ import React from 'react'
 
 const ServicePriceInput = ({ addOrder, service, setService, price, setPrice }) => {
   return (
-		<section className='col-span-2 flex flex-col'>
-			<div className='mb-3 flex'>
+		<section className='col-span-full tablet:col-[3/7] flex flex-col'>
+			<div className='mb-3 flex flex-wrap'>
 				<p className='flex justify-center items-center mr-2'>
 					<label htmlFor='service'>
 						Service:
 						<br />
 						<input
-							className='mt-1 px-2 py-1 w-72'
+							className='mobile:w-72
+								text-base font-normal text-gray-700
+        			bg-white bg-clip-padding
+        				border border-solid border-gray-300 rounded
+        				transition ease-in-out
+        				px-2 py-1 m-0
+        			focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none'
 							type='text'
 							id='service'
 							step='.01'
@@ -23,7 +29,13 @@ const ServicePriceInput = ({ addOrder, service, setService, price, setPrice }) =
 						Price:
 						<br />
 						<input
-							className='mt-1 px-2 py-1 w-20'
+							className='w-20
+								text-base font-normal text-gray-700
+        			bg-white bg-clip-padding
+        				border border-solid border-gray-300 rounded
+        				transition ease-in-out
+        				px-2 py-1 m-0
+        			focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none'
 							type='number'
 							id='price'
 							pattern='[0-9]+'

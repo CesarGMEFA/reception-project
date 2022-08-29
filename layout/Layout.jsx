@@ -10,8 +10,8 @@ import { AiOutlineBarChart } from 'react-icons/ai'
 const Layout = ({children}) => {
   return (
 		<React.Fragment>
-			<header className='flex justify-between items-center border-gray-200 px-2 sm:px-4 py-6'>
-				<span>Management</span>
+			<header className='flex justify-between items-center bg-white border-gray-200 px-2 sm:px-4 py-6 drop-shadow-lg'>
+				{/* <span>Management</span> */}
 				{/* <nav className='flex'>
           <span className='mx-4 text-2xl cursor-pointer' title='reception list'><FaRegListAlt /></span>
           <span className='mx-4 text-2xl cursor-pointer' title='create receipt'><AiOutlineFileAdd /></span>
@@ -57,9 +57,9 @@ const Layout = ({children}) => {
 						<AiOutlineBarChart />
 					</span>
 				</nav>
-				<span>Logout</span>
+				{/* <span>Logout</span> */}
 			</header>
-      <main className='flex justify-center items-center'>
+      <main className='flex justify-center px-4 py-12 bg-[#edeced]'>
         {children}
       </main>
 		</React.Fragment>

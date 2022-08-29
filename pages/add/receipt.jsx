@@ -1,42 +1,77 @@
 import { useState, useEffect } from 'react'
 import { useForm } from "react-hook-form"
 import { v4 } from 'uuid'
-import { GrFormSearch } from 'react-icons/gr'
 
+// Layout
 import Layout from '../../layout/Layout'
 
-import Inputs from '../../components/atom/Inputs'
-import Button from '../../components/atom/Button'
+import Loader from '../../components/atom/Loader'
 
+// Search
+import ReceiptSearch from '../../components/search/ReceiptSearch'
+
+// Molecules
 import FindUserReceipt from '../../components/molecules/FindUserReceipt'
 import ServicePriceInput from '../../components/molecules/ServicePriceInput'
 
+// Organisms
 import Checkboxes from '../../components/organisms/Checkboxes'
 import ReceivedTechnical from '../../components/organisms/ReceivedTechnical'
 import TableTotal from '../../components/organisms/TableTotal'
 import CentralFromReceipt from '../../components/organisms/CentralFromReceipt'
 
+// other things
 import { supabase } from '../../utils/supabaseClient'
-import { getClients, getClientsIdentity } from '../../services/getClients'
+import { getClientsIdentity } from '../../services/getClients'
+import { getMolds } from '../../services/getMolds'
 
-const Receipt = ({ clientsPrepared }) => {
+const Receipt = ({ clientsPrepared, molds }) => {
 	const [search, setSearch] = useState('')
+	const [loadingSearch, setLoadingSearch] = useState(false)
+	const [loadingCreate, setLoadingCreate] = useState(false)
 	const [userSelected, setUserSelected] = useState(null)
+	const [brand, setBrand] = useState("");
 	const [service, setService] = useState('')
 	const [price, setPrice] = useState('')
 	const [orders, setOrders] = useState([])
 
-  const { register, handleSubmit, control, watch, setValue, formState: {error: errorForm} } = useForm()
+  const { register, handleSubmit, control, setValue, getValues, formState: {error: errorForm} } = useForm()
 
+	console.log(orders)
 	
+	// console.log(molds)
 	// console.log('clients: ', clients)
 	// console.log('clients prepared: ', clientsPrepared)
   // console.log('search: ', search)
   // console.log('service: ', service)
   // console.log('price: ', price)
-
+	const cleanInputs = () => {
+		setSearch('')
+		setService('')
+		setPrice('')
+		setOrders([])
+		setUserSelected(null)
+		setBrand('')
+		setValue('name', '')
+		setValue('identity', '')
+		setValue('phone_number', '')
+		setValue('email', '')
+		setValue('date_birth', '')
+		setValue('brand', '')
+		setValue('model', '')
+		setValue('color', '')
+	}
 	const onSubmit = (d) => {
-		console.log('d:', d)
+		try {
+			setLoadingCreate(true)
+			d['orders'] = orders
+			console.log('d:', d)
+		} catch(error) {
+			alert(error)
+		} finally {
+			cleanInputs()
+			setLoadingCreate(false)
+		}
 	}
 
 	const addOrder = () => {
@@ -44,6 +79,8 @@ const Receipt = ({ clientsPrepared }) => {
 			"service": service,
 			"price": price
 		}])
+		setService('')
+		setPrice('')
 	}
 
 	const sumTotal = () => {
@@ -55,6 +92,7 @@ const Receipt = ({ clientsPrepared }) => {
 	const getClient = async () => {
 		const userIdentity = search.match(/[0-9]/g).join('')
 		try {
+			setLoadingSearch(true)
 			const { data, error } = await supabase
 					.from('clients')
 					.select('name, identity, email, date_birth, phone_number')
@@ -64,6 +102,8 @@ const Receipt = ({ clientsPrepared }) => {
 			console.log('data', data)
 		} catch(e) {
 			console.error(e)
+		} finally {
+			setLoadingSearch(false)
 		}
 	}
 
@@ -85,41 +125,24 @@ const Receipt = ({ clientsPrepared }) => {
 
   return (
 		<Layout>
-			<section className='bg-gray-200 p-6 my-6'>
-				<p className='flex justify-center items-center'>
-					<label htmlFor='search'>
-						Search:
-						<br />
-						<input
-							className='mt-1 px-2 py-1'
-							type='text'
-							id='search'
-							value={search}
-							onChange={(e) => setSearch(e.target.value)}
-							list='browsers'
-						/>
-					</label>
-					<button
-						type='button'
-						onClick={getClient}
-						className='bg-green-500 rounded text-white text-2xl p-1 ml-2 self-end'
-					>
-						<GrFormSearch />
-					</button>
-					<datalist id='browsers'>
-						{search.length > 2 &&
-							clientsPrepared.map((user) => (
-								<option value={user.client} key={v4()} />
-							))}
-					</datalist>
-				</p>
+			<section className='bg-white rounded-lg p-6'>
+				<ReceiptSearch
+					search={search}
+					loadingSearch={loadingSearch}
+					setSearch={setSearch}
+					getClient={getClient}
+					clientsPrepared={clientsPrepared}
+					v4={v4}
+				/>
 				<form
 					onSubmit={handleSubmit(onSubmit)}
-					className='grid grid-cols-1 sm:grid-cols-3 bg-gray-200 p-6'
+					className='grid grid-cols-6 gap-3 p-6'
 				>
-					<FindUserReceipt register={register} userSelected={userSelected}/>
-					<CentralFromReceipt register={register} />
-					<section className='col-span-full my-2'>
+					<FindUserReceipt
+						register={register}
+					/>
+					<CentralFromReceipt register={register} molds={molds} brand={brand} setBrand={setBrand}/>
+					<section className='col-span-full mb-2 flex flex-wrap'>
 						<Checkboxes
 							options={[
 								"Battery",
@@ -140,11 +163,10 @@ const Receipt = ({ clientsPrepared }) => {
 						setPrice={setPrice}
 					/>
 					<TableTotal orders={orders} sumTotal={sumTotal} v4={v4} />
-					<Button
+					<button
 						type='submit'
-						addValue='Create'
-						addClass='col-span-full w-24'
-					/>
+						className='col-span-full flex justify-center items-center py-2 px-4 bg-zinc-600 text-white'
+					>{loadingCreate ? <Loader /> : 'Create'}</button>
 				</form>
 			</section>
 		</Layout>
@@ -154,9 +176,11 @@ export default Receipt
 
 export async function getServerSideProps() {
 	const a = await getClientsIdentity()
+	const m = await getMolds()
   return {
     props: {
-			clientsPrepared: a
+			clientsPrepared: a,
+			molds: m
 		}
   }
 }
