@@ -10,7 +10,7 @@ import { AiOutlineBarChart } from 'react-icons/ai'
 const Layout = ({children}) => {
   return (
 		<React.Fragment>
-			<header className='flex justify-between items-center bg-white border-gray-200 px-2 sm:px-4 py-6 drop-shadow-lg'>
+			<header className='flex justify-between items-center fixed w-full bg-white border-gray-200 px-2 sm:px-4 py-6 drop-shadow-lg z-50'>
 				{/* <span>Management</span> */}
 				{/* <nav className='flex'>
           <span className='mx-4 text-2xl cursor-pointer' title='reception list'><FaRegListAlt /></span>
@@ -26,7 +26,7 @@ const Layout = ({children}) => {
               <FaRegListAlt />
             </span>
           </Link>
-					<Link href="/add/receipt">
+					<Link href="/receipt">
 						<span
 							className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
 							title='create receipt'
@@ -34,7 +34,7 @@ const Layout = ({children}) => {
 							<AiOutlineFileAdd />
 						</span>
 					</Link>
-          <Link href="/add/client">
+          <Link href="/client">
             <span
               className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
               title='add costumer'
@@ -59,7 +59,8 @@ const Layout = ({children}) => {
 				</nav>
 				{/* <span>Logout</span> */}
 			</header>
-      <main className='flex justify-center px-4 py-12 bg-[#edeced]'>
+			{/* min-h-[86.5vh] */}
+      <main className='flex justify-center items-center min-h-[100vh]  px-4 pt-32 pb-12 bg-[#edeced]'>
         {children}
       </main>
 		</React.Fragment>

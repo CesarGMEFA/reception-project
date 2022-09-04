@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, memo, useEffect, useState } from "react";
 import { v4 } from "uuid";
 
 const CentralFromReceipt = ({ register, molds, brand, setBrand }) => {
@@ -16,14 +16,15 @@ const CentralFromReceipt = ({ register, molds, brand, setBrand }) => {
 			<input
 				list='b'
 				{...register("brand", { required: true })}
+				placeholder='Apple, Samsung, LG...'
 				onChange={(e) => setBrand(e.target.value)}
-				className="col-span-full mobile:col-[1/4] tablet:col-[1/3]
+				className='col-span-full mobile:col-[1/4] tablet:col-[1/3]
 				text-base font-normal text-gray-700
         bg-white bg-clip-padding
         border border-solid border-gray-300 rounded
         transition ease-in-out
         px-2 py-1 m-0
-        focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+        focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none'
 			/>
 			<datalist id='b'>
 				{molds.map((m) => (
@@ -42,12 +43,16 @@ const CentralFromReceipt = ({ register, molds, brand, setBrand }) => {
 			>
 				{toShow ? (
 					<>
-						<option value=''>Select model</option>
-						{toShow.model.map( m => <option key={v4()} value={m}>{m}</option> )}			
+						<option value=''>Selecciona un modelo</option>
+						{toShow.model.map((m) => (
+							<option key={v4()} value={m}>
+								{m}
+							</option>
+						))}
 					</>
 				) : (
 					<>
-						<option value=''>Select a brand</option>
+						<option value=''>Selecciona una marca</option>
 					</>
 				)}
 			</select>
@@ -62,7 +67,11 @@ const CentralFromReceipt = ({ register, molds, brand, setBrand }) => {
 				{toShow ? (
 					<>
 						<option value=''>Select color</option>
-						{toShow.color.map( m => <option key={v4()} value={m}>{m}</option> )}			
+						{toShow.color.map((m) => (
+							<option key={v4()} value={m}>
+								{m}
+							</option>
+						))}
 					</>
 				) : (
 					<>
@@ -74,9 +83,10 @@ const CentralFromReceipt = ({ register, molds, brand, setBrand }) => {
 				className='col-span-full h-72 mobile:h-52 mt-3 rounded border-black border-2 p-1 resize-none'
 				{...register("description")}
 				placeholder='Description'
+				maxLength={600}
 			/>
 		</Fragment>
 	);
 };
 
-export default CentralFromReceipt;
+export default memo(CentralFromReceipt);

@@ -1,11 +1,35 @@
-import React, { useState, useEffect } from "react"
+import Layout from "../layout/Layout"
 
-import Home from "./Home"
+import List from "../components/List"
+import Empty from "../components/Empty"
 import Auth from "../components/Auth"
 
 import { supabase } from "../utils/supabaseClient"
 
-const Index = (props) => {
+const Index = ({ allData }) => {
+  return (
+    <Layout>
+      {/* <Empty /> */}
+      <List allData={allData}/>
+    </Layout>
+   )
+}
+
+export default Index
+
+export async function getServerSideProps() {
+  let { data: receptions, error } = await supabase
+        .from('receptions')
+        .select('*')
+        .order('id', { ascending: false })
+  if (error) throw error
+  return {
+    props: {
+      allData: receptions
+    },
+  };
+}
+
   // const [isLoading, setIsLoading] = useState(true)
   // const [session, setSession] = useState(null)
 
@@ -17,16 +41,13 @@ const Index = (props) => {
   //   })
   // }, [])
 
-  return (
-    // <React.Fragment>
-    //   {!session ? (
-    //     <Auth />
-    //   ) : (
-    //     <Home />
-    //   )}
-    // </React.Fragment>
-    <Home />
-   )
-}
-
-export default Index
+  // return (
+  //   <React.Fragment>
+  //     {!session ? (
+  //       <Auth />
+  //     ) : (
+  //       <Home />
+  //     )}
+  //   </React.Fragment>
+  //   <Home />
+  //  )

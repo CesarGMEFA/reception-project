@@ -1,29 +1,30 @@
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import { useForm } from "react-hook-form"
 import { v4 } from 'uuid'
 
 // Layout
-import Layout from '../../layout/Layout'
+import Layout from '../layout/Layout'
 
-import Loader from '../../components/atom/Loader'
+import Loader from '../components/atom/Loader'
 
 // Search
-import ReceiptSearch from '../../components/search/ReceiptSearch'
+import ReceiptSearch from '../components/search/ReceiptSearch'
 
 // Molecules
-import FindUserReceipt from '../../components/molecules/FindUserReceipt'
-import ServicePriceInput from '../../components/molecules/ServicePriceInput'
+import FindUserReceipt from '../components/molecules/FindUserReceipt'
+import ServicePriceInput from '../components/molecules/ServicePriceInput'
 
 // Organisms
-import Checkboxes from '../../components/organisms/Checkboxes'
-import ReceivedTechnical from '../../components/organisms/ReceivedTechnical'
-import TableTotal from '../../components/organisms/TableTotal'
-import CentralFromReceipt from '../../components/organisms/CentralFromReceipt'
+import Checkboxes from '../components/organisms/Checkboxes'
+import ReceivedTechnical from '../components/organisms/ReceivedTechnical'
+import TableTotal from '../components/organisms/TableTotal'
+import CentralFromReceipt from '../components/organisms/CentralFromReceipt'
 
 // other things
-import { supabase } from '../../utils/supabaseClient'
-import { getClientsIdentity } from '../../services/getClients'
-import { getMolds } from '../../services/getMolds'
+import { supabase } from '../utils/supabaseClient'
+import { getClientsIdentity } from '../services/getClients'
+import { getMolds } from '../services/getMolds'
 
 const Receipt = ({ clientsPrepared, molds }) => {
 	const [search, setSearch] = useState('')
@@ -35,16 +36,12 @@ const Receipt = ({ clientsPrepared, molds }) => {
 	const [price, setPrice] = useState('')
 	const [orders, setOrders] = useState([])
 
-  const { register, handleSubmit, control, setValue, getValues, formState: {error: errorForm} } = useForm()
+  const { register, handleSubmit, control, setValue, formState: {error: errorForm} } = useForm()
 
-	console.log(orders)
-	
-	// console.log(molds)
-	// console.log('clients: ', clients)
-	// console.log('clients prepared: ', clientsPrepared)
-  // console.log('search: ', search)
-  // console.log('service: ', service)
-  // console.log('price: ', price)
+	const router = useRouter()
+
+	if (errorForm) throw errorForm
+
 	const cleanInputs = () => {
 		setSearch('')
 		setService('')
@@ -60,12 +57,39 @@ const Receipt = ({ clientsPrepared, molds }) => {
 		setValue('brand', '')
 		setValue('model', '')
 		setValue('color', '')
+		setValue('description', '')
+		setValue('deliveryTime', '')
 	}
-	const onSubmit = (d) => {
+
+	const onSubmit = async (d) => {
 		try {
 			setLoadingCreate(true)
 			d['orders'] = orders
-			console.log('d:', d)
+			d['status'] = "en reparación"
+			const { data, error: e } = await supabase
+			.from('receptions')
+			.insert([
+				{ name: d.name,
+					identity: d.identity,
+					email: d.email,
+					phone_number: d.phone_number,
+					delivery_time: d.delivery_time,
+					date_birth: d.date_birth,
+					brand: d.brand,
+				  model: d.model,
+					color: d.color,
+					description: d.description,
+					pieces: d.pieces,
+					received: d.received,
+					technical: d.technical,
+					order: d.orders,
+					status: d.status
+				}
+			])
+			if (e) throw e.message
+			console.log('data send: ', data)
+			console.log('id: ', data[0].id)
+			router.push(`/receipt/${data[0].id}`)
 		} catch(error) {
 			alert(error)
 		} finally {
@@ -99,22 +123,15 @@ const Receipt = ({ clientsPrepared, molds }) => {
 					.eq('identity', userIdentity)
 			if (error) throw error
 			setUserSelected(data)
-			console.log('data', data)
 		} catch(e) {
 			console.error(e)
 		} finally {
 			setLoadingSearch(false)
 		}
 	}
-
-	useEffect(() => {
-		console.log(orders)
-	}, [orders])
 	
-
 	useEffect(() => {
 		if (userSelected) {
-			console.log('userSelected: ',userSelected)
 			setValue('name', userSelected[0].name)
 			setValue('identity', userSelected[0].identity)
 			setValue('phone_number', userSelected[0].phone_number)
@@ -138,10 +155,13 @@ const Receipt = ({ clientsPrepared, molds }) => {
 					onSubmit={handleSubmit(onSubmit)}
 					className='grid grid-cols-6 gap-3 p-6'
 				>
-					<FindUserReceipt
+					<FindUserReceipt register={register} />
+					<CentralFromReceipt
 						register={register}
+						molds={molds}
+						brand={brand}
+						setBrand={setBrand}
 					/>
-					<CentralFromReceipt register={register} molds={molds} brand={brand} setBrand={setBrand}/>
 					<section className='col-span-full mb-2 flex flex-wrap'>
 						<Checkboxes
 							options={[
@@ -154,6 +174,23 @@ const Receipt = ({ clientsPrepared, molds }) => {
 							name='pieces'
 						/>
 					</section>
+					<p className='flex justify-center items-center col-span-full'>
+						<label htmlFor='delivery_time'>
+							Delivery time:
+							<br />
+							<input
+								className='text-base font-normal text-gray-700
+        			bg-white bg-clip-padding
+        				border border-solid border-gray-300 rounded
+        				transition ease-in-out
+        				px-2 py-1 m-0
+        			focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none'
+								type='datetime-local'
+								{...register("delivery_time", {required:true})}
+								id='delivery_time'
+							/>
+						</label>
+					</p>
 					<ReceivedTechnical register={register} />
 					<ServicePriceInput
 						addOrder={addOrder}
@@ -165,8 +202,13 @@ const Receipt = ({ clientsPrepared, molds }) => {
 					<TableTotal orders={orders} sumTotal={sumTotal} v4={v4} />
 					<button
 						type='submit'
-						className='col-span-full flex justify-center items-center py-2 px-4 bg-zinc-600 text-white'
-					>{loadingCreate ? <Loader /> : 'Create'}</button>
+						title='Create a Receipt'
+						className='col-span-full flex justify-center items-center py-2 px-4 bg-zinc-600 text-white
+						hover:bg-zinc-400 hover:shadow-lg
+			      focus:bg-zinc-700 focus:shadow-lg focus:outline-none focus:ring-0'
+					>
+						{loadingCreate ? <Loader /> : "Create"}
+					</button>
 				</form>
 			</section>
 		</Layout>
@@ -174,7 +216,7 @@ const Receipt = ({ clientsPrepared, molds }) => {
 }
 export default Receipt
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
 	const a = await getClientsIdentity()
 	const m = await getMolds()
   return {

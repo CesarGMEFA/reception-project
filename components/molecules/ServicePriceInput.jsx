@@ -1,6 +1,7 @@
 import React from 'react'
 
 const ServicePriceInput = ({ addOrder, service, setService, price, setPrice }) => {
+	
   return (
 		<section className='col-span-full tablet:col-[3/7] flex flex-col'>
 			<div className='mb-3 flex flex-wrap'>
