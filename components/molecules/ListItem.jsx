@@ -12,7 +12,7 @@ const ListItem = ({ data }) => {
 
   return (
     <>
-      <section className='grid grid-cols-5 gap-1 tablet:gap-3 w-full tablet:max-w-[700px] bg-white py-4 px-4 my-1 border-b-2 rounded'>
+      <section className='grid grid-cols-5 gap-1 tablet:gap-3 w-full tablet:max-w-[700px]  bg-white py-4 px-4 my-1 border-b-2 rounded'>
 				<div className='col-[1/4] row-span-1 mobile:col-span-2'>
 					<span>#: {data.id}</span>
 					<span className='ml-4 w-28 text-blue-600 font-medium'>

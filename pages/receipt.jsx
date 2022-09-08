@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { useForm } from "react-hook-form"
+import { Toaster } from 'react-hot-toast'
 import { v4 } from 'uuid'
 
 // Layout
@@ -21,8 +22,11 @@ import ReceivedTechnical from '../components/organisms/ReceivedTechnical'
 import TableTotal from '../components/organisms/TableTotal'
 import CentralFromReceipt from '../components/organisms/CentralFromReceipt'
 
-// other things
+// Utils
+import { notifySucess, notifyError } from '../utils/notify'
 import { supabase } from '../utils/supabaseClient'
+
+// Services
 import { getClientsIdentity } from '../services/getClients'
 import { getMolds } from '../services/getMolds'
 
@@ -64,8 +68,6 @@ const Receipt = ({ clientsPrepared, molds }) => {
 	const onSubmit = async (d) => {
 		try {
 			setLoadingCreate(true)
-			d['orders'] = orders
-			d['status'] = "en reparación"
 			const { data, error: e } = await supabase
 			.from('receptions')
 			.insert([
@@ -82,13 +84,17 @@ const Receipt = ({ clientsPrepared, molds }) => {
 					pieces: d.pieces,
 					received: d.received,
 					technical: d.technical,
-					order: d.orders,
-					status: d.status
+					order: orders,
+					status: "reparación"
 				}
 			])
-			if (e) throw e.message
-			console.log('data send: ', data)
-			console.log('id: ', data[0].id)
+
+			if (e) {
+				notifyError()
+				throw e
+			};
+			notifySucess()
+
 			router.push(`/receipt/${data[0].id}`)
 		} catch(error) {
 			alert(error)
@@ -114,6 +120,12 @@ const Receipt = ({ clientsPrepared, molds }) => {
 	}
 
 	const getClient = async () => {
+		console.log(/[0-9]/g.test(search))
+		if (!(/[0-9]/g.test(search))) {
+			notifyError()
+			return true
+		}
+
 		const userIdentity = search.match(/[0-9]/g).join('')
 		try {
 			setLoadingSearch(true)
@@ -121,8 +133,14 @@ const Receipt = ({ clientsPrepared, molds }) => {
 					.from('clients')
 					.select('name, identity, email, date_birth, phone_number')
 					.eq('identity', userIdentity)
-			if (error) throw error
+			
+			if (error) {
+				notifyError()
+				throw error
+			}
+			notifySucess()
 			setUserSelected(data)
+
 		} catch(e) {
 			console.error(e)
 		} finally {
@@ -210,6 +228,7 @@ const Receipt = ({ clientsPrepared, molds }) => {
 						{loadingCreate ? <Loader /> : "Create"}
 					</button>
 				</form>
+				<Toaster />
 			</section>
 		</Layout>
   );

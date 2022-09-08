@@ -42,7 +42,7 @@ const Layout = ({children}) => {
               <AiOutlineUserAdd />
             </span>
           </Link>
-					<Link href="/employees">
+					<Link href="/adds">
 						<span
 							className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
 							title='employees'

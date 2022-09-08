@@ -11,14 +11,21 @@ import Loader from '../components/atom/Loader'
 const Client = (props) => {
   const [loadingAddUser, setLoadingAddUser] = useState(false)
   const { register, handleSubmit, formState: {error} } = useForm()
+
+  const firstLettersToUpperCase = (name) => {
+		return name.split(" ").map( word => word[0].toUpperCase() + word.substring(1)).join(" ")
+	}
+
   const onSubmit = async (data) => {
     try {
       setLoadingAddUser(true)
+      const name = firstLettersToUpperCase(data.name)
+
       const { data: d, error: e } = await supabase
       .from('clients')
       .insert([
         { 
-          name: data.name.toLowerCase(),
+          name: name,
           identity: data.identity,
           date_birth: data.dateBirth,
           email: data.emailClient,

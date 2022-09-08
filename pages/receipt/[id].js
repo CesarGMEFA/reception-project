@@ -18,6 +18,7 @@ const ReceiptIdPage = ({ receipt }) => {
 	const data = receipt.data
 
 	useEffect(() => {
+
 		if (data.pieces) {
 			let p = data.pieces.filter( item => item !== null).join(' / ')
 			setPieces(p)
@@ -42,15 +43,13 @@ const ReceiptIdPage = ({ receipt }) => {
 				{ note: note, IDreceipt: receipt.id },
 			])
 		if (error) throw error
-		console.log('data', sending)
 	}
-	console.log('receipt', receipt)
+
 	useEffect(() => {
 		const { data, error } = supabase.from("notes")
 																	.select("created_at, note")
 																	.eq("IDreceipt", receipt.id)
 		if (error) throw error
-		console.log('note', data)
 	}, [])
 
   return (
