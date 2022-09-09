@@ -78,12 +78,12 @@ const Adds = ({ data }) => {
           .from('molds')
           .update({ model: [...sendDelete]})
           .eq('brand', phones.brand)
-      if (e) throw e
-      console.log("send delete: ", send)
+      
+			if (e) throw e
+
     } catch (error) {
       console.log(error)
     }
-    console.log('DELETE: ', data)
   }
 
   const deleteTagColor = async (features) => {
@@ -101,12 +101,12 @@ const Adds = ({ data }) => {
           .from('molds')
           .update({ color: [...sendDelete]})
           .eq('brand', phones.brand)
-      if (e) throw e
-      console.log("send delete: ", send)
+      
+			if (e) throw e
+
     } catch (error) {
       console.log(error)
     }
-    console.log('DELETE: ', data)
   }
   
 	useEffect(() => {

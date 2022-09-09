@@ -2,21 +2,35 @@ import { useState, useEffect } from "react"
 import { format } from "date-fns"
 import { v4 } from "uuid"
 import { useForm } from "react-hook-form"
+import { Toaster } from "react-hot-toast"
+
+// Layout
 import Layout from "../../layout/Layout"
 
+// Atom components
+import Loader from '../../components/atom/Loader'
+import Note from "../../components/atom/Note"
+
+// Services
+import { getNotes } from "../../services/getNotes"
 import { getDataId, getPaths } from '../../services/getPaths'
+
+// Utils
+import { formatDate } from "../../utils/formatDate"
+import { notifySucess, notifyError } from '../../utils/notify'
 import { supabase } from "../../utils/supabaseClient"
 
 const ReceiptIdPage = ({ receipt }) => {
 	const [pieces, setPieces] = useState("Sin accesorios")
 	const [services, setServices] = useState([])
-	const [notes, setNotes] = useState(null)
+	const [notes, setNotes] = useState([])
+	const [loading, setLoading] = useState(false)
 	const [total, setTotal] = useState(0)
 
-	const { register, handleSubmit, formState: {error: errorForm} } = useForm()
-
+	const { register, handleSubmit, setValue, formState: {error: errorForm} } = useForm()
+	
 	const data = receipt.data
-
+  
 	useEffect(() => {
 
 		if (data.pieces) {
@@ -30,31 +44,54 @@ const ReceiptIdPage = ({ receipt }) => {
 
 		let t = services.reduce((acum, e) => acum + Number(e.price), 0)
 		setTotal(t)
+
 	}, [])
 
-	const created = format(new Date(data.created_at), 'dd/MM/yyyy')
+	const created = formatDate(data.created_at)
 
 	if (errorForm) throw errorForm
 
-	const onSubmit = async ({note}) => {
-		const { data: sending, error } = await supabase
-			.from('notes')
-			.insert([
-				{ note: note, IDreceipt: receipt.id },
-			])
-		if (error) throw error
-	}
+	useEffect(() => {
+		getNotes(receipt.id)
+			.then( (value) => setNotes(value))
+			.catch( error => console.error(error))
+	}, [])
 
 	useEffect(() => {
-		const { data, error } = supabase.from("notes")
-																	.select("created_at, note")
-																	.eq("IDreceipt", receipt.id)
-		if (error) throw error
-	}, [])
+		console.log('notes', notes)
+	}, [notes])
+
+	const onSubmit = async ( d ) => {
+		try {
+			setLoading(true)
+			const { data: sending, error } = await supabase
+				.from('notes')
+				.insert([
+					{ note: d.notes, IDreceipt: receipt.id },
+				])
+	
+			if (error) {
+				notifyError()
+				throw error
+			}
+	
+			notifySucess()
+			setValue("notes", "")
+			setNotes( [...notes, {
+				note: sending[0].note,
+				created_at: formatDate(sending[0].created_at)
+			}])
+
+		} catch(e) {
+			console.error(e)
+		} finally {
+			setLoading(false)
+		}
+	}
 
   return (
 		<Layout>
-			<section className="flex flex-row flex-wrap self-start tablet:w-[90%] tablet:max-w-[1200px]">
+			<section className='flex flex-row flex-wrap self-start tablet:w-[90%] tablet:max-w-[1200px]'>
 				<section className='bg-white rounded-lg p-6 font-medium w-full min-h-min tablet:max-w-[68%]'>
 					<section className='flex justify-between tablet:max-w-[1000px]'>
 						<p>ID: {receipt.id}</p>
@@ -97,34 +134,26 @@ const ReceiptIdPage = ({ receipt }) => {
 					<form onSubmit={handleSubmit(onSubmit)}>
 						<textarea
 							className='w-full h-32 mobile:h-32 mt-3 rounded border-black border-2 p-1 resize-none'
-							{...register("note")}
+							{...register("notes")}
 							maxLength={600}
 						/>
-						<input
-							type="submit"
-							className="cursor-pointer px-6 py-2.5
-							bg-blue-600
-							text-white font-medium text-xs
-							leading-tight
-							uppercase
-							rounded
-							shadow-md
-							hover:bg-blue-700 hover:shadow-lg
-							focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0
-							transition
-							duration-150
-							ease-in-out"
-						/>
+						<button
+							type='submit'
+							className='cursor-pointer px-6 py-2.5 bg-blue-600
+							text-white font-medium text-xs leading-tight uppercase rounded shadow-md
+							hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0
+							transition duration-150 ease-in-out'
+						>
+							{loading ? <Loader /> : "Send"}
+						</button>
 					</form>
-					<div className="mt-3">
-						<p>
-							lorem asjdfsdklfkla rqweurqwe0r asjdfasdlkfjafjkla afjkdaskldjfklasdfj
-						</p>
-						<p className="text-zinc-500">
-							Creado: 03/09/2022 4:47
-						</p>
-					</div>
+					{notes && (
+						notes.map( ({ note, created_at }) => (
+							<Note key={v4()} note={note} created_at={created_at}/>
+						))
+					)}
 				</section>
+				<Toaster />
 			</section>
 		</Layout>
   );
@@ -143,7 +172,7 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
 	const receipt = await getDataId(params.id)
-	
+
 	return {
 		props: {
 			receipt

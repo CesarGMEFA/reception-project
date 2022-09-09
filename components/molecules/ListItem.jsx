@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import * as duration from 'duration-fns'
+
 import { BsStopwatch } from 'react-icons/bs'
 import { ImEye } from 'react-icons/im'
 import { AiOutlineFilePdf } from 'react-icons/ai'
@@ -8,7 +8,7 @@ import { getDeliveryTime } from '../../utils/getDeliveryTime'
 
 const ListItem = ({ data }) => {
 
-	const dateDelivery = getDeliveryTime(data.created_at, data.delivery_time)
+	const dateDelivery = getDeliveryTime(new Date(), data.delivery_time)
 
   return (
     <>
