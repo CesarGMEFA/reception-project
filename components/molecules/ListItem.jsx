@@ -33,7 +33,13 @@ const ListItem = ({ data }) => {
 							<ImEye className='inline-block mr-2 cursor-pointer' />
 						</a>
 					</Link>
-					<AiOutlineFilePdf className='inline-block cursor-pointer' />
+					<Link href={`/print/${data.id}`}>
+						<a target="_blanket">
+							<AiOutlineFilePdf className='inline-block cursor-pointer' >
+								
+							</AiOutlineFilePdf>
+						</a>
+					</Link>
 				</div>
 			</section>
     </>
