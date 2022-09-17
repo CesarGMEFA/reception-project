@@ -93,26 +93,22 @@ const ReceiptIdPage = ({ receipt }) => {
 		}
 	}
 
-	const [printing, setPrinting] = useState(false)
 	const componentRef = useRef();
-	// const onBeforeGetContentResolve = useRef(null);
-
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-		// onBeforeGetContent: () => {
-    //   return new Promise((resolve) => {
-    //     setPrinting(true);
-    //     onBeforeGetContentResolve = resolve;
-    //   });
-    // },
-	})
-
-	// useEffect(() => {
-  //   if (printing && onBeforeGetContentResolve.current) {
-  //     onBeforeGetContentResolve.current(); // Resolves the Promise in `onBeforeGetContent`
-  //   }
-  // }, [printing, onBeforeGetContentResolve]);
-
+	const divRef = useRef(null)
+	
+  const print = useReactToPrint({
+    content: () => componentRef.current
+  });
+  
+  const handlePrint = () => {
+    divRef.current.classList.remove("hidden")
+    console.log('fn divRef', divRef.current)
+    print()
+    setTimeout(() => {
+      divRef.current.classList.add("hidden")
+      console.log('setTimeOut divRef', divRef.current)
+    }, 1000)
+  }
 
   return (
 		<Layout>
@@ -126,6 +122,16 @@ const ReceiptIdPage = ({ receipt }) => {
 							pieces={pieces}
 							total={total}
 						/>
+						<div className="hidden" ref={divRef} >
+							<ComponentToPrint
+								data={data}
+								services={services}
+								created={created}
+								pieces={pieces}
+								total={total}
+							/>
+
+						</div>
 					</div>
 					<button
 						className='bg-green-600 py-1.5 px-4 rounded cursor-pointer 
