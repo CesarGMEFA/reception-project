@@ -44,7 +44,7 @@ export class ComponentToPrint extends React.Component {
 						))}
 						<p className='text-xl mt-2'>Total: {this.props.total}$</p>
 					</section>
-					<p className="absolute right-5 bottom-3">firm:___________________________</p>
+					<p className="text-xs absolute right-5 bottom-3">firm:___________________________</p>
 				</section>
 			</section>
 		);
