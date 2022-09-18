@@ -94,45 +94,39 @@ const ReceiptIdPage = ({ receipt }) => {
 	}
 
 	const componentRef = useRef();
-	const divRef = useRef(null)
-	
-  const print = useReactToPrint({
+  const handlePrint = useReactToPrint({
     content: () => componentRef.current
   });
-  
-  const handlePrint = () => {
-    divRef.current.classList.remove("hidden")
-    console.log('fn divRef', divRef.current)
-    print()
-    setTimeout(() => {
-      divRef.current.classList.add("hidden")
-      console.log('setTimeOut divRef', divRef.current)
-    }, 1000)
-  }
 
   return (
 		<Layout>
 			<section className='flex flex-row flex-wrap justify-center tablet:max-w-[1200px]'>
 				<div>
-					<div ref={componentRef} >
-						<ComponentToPrint
-							data={data}
-							services={services}
-							created={created}
-							pieces={pieces}
-							total={total}
-						/>
-						<div className="hidden" ref={divRef} >
-							<ComponentToPrint
-								data={data}
-								services={services}
-								created={created}
-								pieces={pieces}
-								total={total}
-							/>
-
-						</div>
+						<div className="hidden" >
+							<div ref={componentRef} >
+								<ComponentToPrint
+									data={data}
+									services={services}
+									created={created}
+									pieces={pieces}
+									total={total}
+								/>
+								<ComponentToPrint
+									data={data}
+									services={services}
+									created={created}
+									pieces={pieces}
+									total={total}
+								/>
+							</div>
 					</div>
+					<ComponentToPrint
+						data={data}
+						services={services}
+						created={created}
+						pieces={pieces}
+						total={total}
+					/>
 					<button
 						className='bg-green-600 py-1.5 px-4 rounded cursor-pointer 
 				text-white font-semibold fixed bottom-0 right-0.5 mx-5 mb-2 w-36'
@@ -193,43 +187,3 @@ export async function getStaticProps({ params }) {
 		}
 	};
 }
-
-// className='flex flex-row flex-wrap self-start tablet:w-[90%] tablet:max-w-[1200px]'
-{/* <section className='bg-white rounded-lg p-6 font-medium w-full min-h-min tablet:max-w-[68%]'>
-					<section className='flex justify-between tablet:max-w-[1000px]'>
-						<p>ID: {receipt.id}</p>
-						<p>Created: {created}</p>
-					</section>
-					<section className='flex justify-between flex-wrap'>
-						<div className='mt-4'>
-							<p>Name: {data.name}</p>
-							<p>Identity: {data.identity}</p>
-							<p>Email: {data.email}</p>
-							<p>Date of birth: {data.date_birth}</p>
-							<p>Phone number: {data.phone_number}</p>
-						</div>
-						<div className='mt-4'>
-							<p>Brand: {data.brand}</p>
-							<p>Model: {data.model}</p>
-							<p>Color: {data.color}</p>
-							<p>Received: {data.received}</p>
-							<p>Technical: {data.technical}</p>
-						</div>
-					</section>
-					<section>
-						<p className='my-2'>Entregado con: {pieces} </p>
-						<p>Description:</p>
-						<p className='border-2 border-black rounded-lg min-h-[150px] p-2'>
-							{data.description}
-						</p>
-					</section>
-					<section className='mt-2'>
-						<p>Service:</p>
-						{services.map((s) => (
-							<p key={v4()}>
-								{s.service} {s.price}$
-							</p>
-						))}
-						<p className='text-xl mt-2'>Total: {total}$</p>
-					</section>
-				</section> */}
