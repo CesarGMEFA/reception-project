@@ -63,12 +63,3 @@ const ListItem = ({ data }) => {
 }
 
 export default ListItem
-{/* 
-<span className='ml-4 w-28 text-green-600 font-medium'>
-	delivered
-</span>
-
-<span className='ml-4 w-28 text-red-600 font-medium'>
-	Undelivered
-</span>
-*/}
