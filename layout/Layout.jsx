@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Link from 'next/link'
 
 import { FaRegListAlt } from 'react-icons/fa'
@@ -7,7 +7,24 @@ import { AiOutlineUserAdd } from 'react-icons/ai'
 import { FaRegAddressCard } from 'react-icons/fa'
 import { AiOutlineBarChart } from 'react-icons/ai'
 
+import { supabase } from '../utils/supabaseClient'
+
+import ProfileContext from '../utils/context/ProfileContext'
+
 const Layout = ({children}) => {
+
+	const { profile } = useContext(ProfileContext)
+
+	const signOut = async () => {
+		try {
+			const { error } = await supabase.auth.signOut()
+			if (error) throw error
+
+		} catch (e) {
+			alert(e)
+		}
+	}
+
   return (
 		<React.Fragment>
 			<header className='flex justify-between items-center fixed w-full bg-white border-gray-200 px-2 sm:px-4 py-6 drop-shadow-lg z-50'>
@@ -57,9 +74,32 @@ const Layout = ({children}) => {
 						<AiOutlineBarChart />
 					</span>
 				</nav>
-				{/* <span>Logout</span> */}
+				<section>
+					{ profile[0] && (
+						<>
+							<p className='inline-block font-bold'>{profile[0].username} -</p>
+							<button onClick={signOut}
+								className='px-3 py-2.5 ml-1
+								bg-red-600
+								text-white
+								font-medium
+								text-xs
+								leading-tight
+								uppercase
+								rounded
+								shadow-md
+								hover:bg-red-700 hover:shadow-lg
+								focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0
+								transition
+								duration-150'
+								>
+								Cerrar sesi&oacute;n
+							</button>
+						</>
+					) }
+					{' '}
+				</section>
 			</header>
-			{/* min-h-[86.5vh] */}
       <main className='flex justify-center items-center min-h-[100vh]  px-4 pt-32 pb-12 bg-[#edeced]'>
         {children}
       </main>

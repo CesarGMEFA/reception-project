@@ -1,13 +1,17 @@
-import { Fragment, useState, useEffect } from 'react';
+import { useState, useEffect, useContext, memo } from 'react';
 
 import ListItem from './molecules/ListItem'
+
+import ProfileContext from '../utils/context/ProfileContext';
 
 const List = ({ allData }) => {
 	const [currentPage, setCurrentPage] = useState(0)
 	const [numberOfItems, setNumberOfItems] = useState(6)
 	const [search, setSearch] = useState("")
 
-	
+	const { profile } = useContext(ProfileContext)
+	console.log('profile', profile)
+
 	const filteredReceiptsList = () => {
 
 		if ( search === 0 )
@@ -44,7 +48,6 @@ const List = ({ allData }) => {
 			setNumberOfItems(currentPage + 6)
 		}
 	}, [prevPage, nextPage])
-
 
   return (
 		<section className='flex flex-col items-center self-start'>
@@ -123,4 +126,4 @@ const List = ({ allData }) => {
   );
 }
 
-export default List
+export default memo(List)

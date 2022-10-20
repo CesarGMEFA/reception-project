@@ -8,7 +8,7 @@ import { supabase } from '../utils/supabaseClient'
 import { useState } from 'react'
 import Loader from '../components/atom/Loader'
 
-const Client = (props) => {
+const Client = () => {
   const [loadingAddUser, setLoadingAddUser] = useState(false)
   const { register, handleSubmit, formState: {error} } = useForm()
 

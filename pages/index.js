@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react"
+
 import Layout from "../layout/Layout"
 
 import List from "../components/List"
@@ -7,10 +9,27 @@ import Auth from "../components/Auth"
 import { supabase } from "../utils/supabaseClient"
 
 const Index = ({ allData }) => {
+
+  const [session, setSession] = useState(null)
+
+  useEffect(() => {
+    setSession(supabase.auth.session())
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+  }, [])
+
   return (
     <Layout>
-      {/* <Empty /> */}
-      <List allData={allData}/>
+      {!session
+       ? <Auth />
+       : (
+          allData.length
+          ? <List allData={allData}/>
+          : <Empty />
+       )
+      }
     </Layout>
    )
 }
@@ -29,25 +48,3 @@ export async function getServerSideProps() {
     },
   };
 }
-
-  // const [isLoading, setIsLoading] = useState(true)
-  // const [session, setSession] = useState(null)
-
-  // useEffect(() => {
-  //   setSession(supabase.auth.session())
-
-  //   supabase.auth.onAuthStateChange((_event, session) => {
-  //     setSession(session)
-  //   })
-  // }, [])
-
-  // return (
-  //   <React.Fragment>
-  //     {!session ? (
-  //       <Auth />
-  //     ) : (
-  //       <Home />
-  //     )}
-  //   </React.Fragment>
-  //   <Home />
-  //  )
