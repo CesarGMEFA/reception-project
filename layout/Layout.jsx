@@ -1,5 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, Fragment } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 import { FaRegListAlt } from 'react-icons/fa'
 import { AiOutlineFileAdd } from 'react-icons/ai'
@@ -12,16 +13,18 @@ import { supabase } from '../utils/supabaseClient'
 import ProfileContext from '../utils/context/ProfileContext'
 
 const Layout = ({children}) => {
-
-	const { profile } = useContext(ProfileContext)
+	const { profile, setProfile, session } = useContext(ProfileContext)
+	const router = useRouter()
 
 	const signOut = async () => {
 		try {
 			const { error } = await supabase.auth.signOut()
 			if (error) throw error
-
+			router.push("/")
 		} catch (e) {
 			alert(e)
+		} finally {
+			setProfile([])
 		}
 	}
 
@@ -35,15 +38,15 @@ const Layout = ({children}) => {
           <span className='mx-4 text-2xl cursor-pointer' title='add costumer'><AiOutlineUserAdd /></span>
         </nav> */}
 				<nav className='flex items-center'>
-          <Link href="/">
-            <span
-              className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
-              title='reception list'
-            >
-              <FaRegListAlt />
-            </span>
-          </Link>
-					<Link href="/receipt">
+					<Link href='/'>
+						<span
+							className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
+							title='reception list'
+						>
+							<FaRegListAlt />
+						</span>
+					</Link>
+					<Link href='/receipt'>
 						<span
 							className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
 							title='create receipt'
@@ -51,15 +54,15 @@ const Layout = ({children}) => {
 							<AiOutlineFileAdd />
 						</span>
 					</Link>
-          <Link href="/client">
-            <span
-              className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
-              title='add costumer'
-            >
-              <AiOutlineUserAdd />
-            </span>
-          </Link>
-					<Link href="/adds">
+					<Link href='/client'>
+						<span
+							className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
+							title='add costumer'
+						>
+							<AiOutlineUserAdd />
+						</span>
+					</Link>
+					<Link href='/adds'>
 						<span
 							className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
 							title='employees'
@@ -75,34 +78,41 @@ const Layout = ({children}) => {
 					</span>
 				</nav>
 				<section>
-					{ profile[0] && (
-						<>
-							<p className='inline-block font-bold'>{profile[0].username} -</p>
-							<button onClick={signOut}
-								className='px-3 py-2.5 ml-1
-								bg-red-600
-								text-white
-								font-medium
-								text-xs
-								leading-tight
-								uppercase
-								rounded
-								shadow-md
-								hover:bg-red-700 hover:shadow-lg
-								focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0
-								transition
-								duration-150'
-								>
-								Cerrar sesi&oacute;n
-							</button>
-						</>
-					) }
-					{' '}
+					{session && (
+						<Fragment>
+							{profile[0] ? (
+								<Fragment>
+									<p className='inline-block font-bold'>
+										{profile[0].username} -
+									</p>
+									<button
+										onClick={signOut}
+										className='px-3 py-2.5 ml-1
+									bg-red-600
+									text-white
+									font-medium
+									text-xs
+									leading-tight
+									uppercase
+									rounded
+									shadow-md
+									hover:bg-red-700 hover:shadow-lg
+									focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0
+									transition
+									duration-150'
+									>
+										Cerrar sesi&oacute;n
+									</button>
+								</Fragment>
+							) : null
+							}
+						</Fragment>
+					)}{" "}
 				</section>
 			</header>
-      <main className='flex justify-center items-center min-h-[100vh]  px-4 pt-32 pb-12 bg-[#edeced]'>
-        {children}
-      </main>
+			<main className='flex justify-center items-center min-h-[100vh]  px-4 pt-32 pb-12 bg-[#edeced]'>
+				{children}
+			</main>
 		</React.Fragment>
   );
 }

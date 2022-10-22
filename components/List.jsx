@@ -10,7 +10,6 @@ const List = ({ allData }) => {
 	const [search, setSearch] = useState("")
 
 	const { profile } = useContext(ProfileContext)
-	console.log('profile', profile)
 
 	const filteredReceiptsList = () => {
 

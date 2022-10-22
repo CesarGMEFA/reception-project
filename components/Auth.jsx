@@ -27,13 +27,11 @@ const Auth = () => {
         password
       })
       if (error) throw error
-      console.log('session', session)
-      console.log('user', user)
       const p = await profileValidation(user.id)
-      console.log("p:",p)
       setProfile(p)
     } catch (error) {
       alert(error.error_description || error.message)
+      console.error(error)
     } finally {
       setLoading(false)
       setEmail("")

@@ -4,8 +4,13 @@ import { supabase } from "../supabaseClient"
 
 function useProfile() {
   const [profile, setProfile] = useState({})
+  const [event, setEvent] = useState(null)
 
-  const checkingSession = supabase.auth.session()
+  const session = supabase.auth.session()
+    
+  supabase.auth.onAuthStateChange( (event, _session) => {
+    setEvent(event)
+  })
   
   const profileValidation = async (id) => {
     try {
@@ -14,31 +19,27 @@ function useProfile() {
         .select('username,role,userId')
         .eq('userId', id)
         if(error) throw error
-        return data
-      } catch(e) {
-        alert(e.message)
-      }
+      return data
+    } catch(e) {
+      alert(e.message)
     }
+  }
 
-    useEffect(() => {
-      if (checkingSession) {
-        profileValidation(checkingSession.user.id)
-          .then((res) => {
-            setProfile(res)
-          })
-          .catch((error) => {
-            alert(error)
-          })
-      } else {
-        console.log('no')
-        console.log(checkingSession)
+  useEffect(() => {
+    (async() => {
+      if (session) {
+        const p = await profileValidation(session.user.id)
+        setProfile(p)
       }
-    }, [])
+    })()
+  }, [])
 
   return {
     profile,
     setProfile,
-    profileValidation
+    profileValidation,
+    session,
+    event
   }
 }
 

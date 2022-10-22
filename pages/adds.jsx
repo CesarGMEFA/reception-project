@@ -2,15 +2,14 @@ import { useEffect, useState } from "react";
 
 import { useForm } from "react-hook-form";
 
-import { toast, Toaster } from 'react-hot-toast'
-
-import { v4 } from "uuid";
+import { Toaster } from 'react-hot-toast'
 
 import Layout from "../layout/Layout";
 
 import HeaderAdds from "../components/molecules/HeaderAdds";
-import RowModelsColors from "../components/molecules/RowModelsColors";
-import InputTag from "../components/molecules/InputTag";
+
+import TableResources from "../components/organisms/TableResources";
+import AddStaff from "../components/organisms/AddStaff";
 
 import { getMolds } from "../services/getMolds";
 import { updateModel } from "../services/updateModel";
@@ -18,7 +17,7 @@ import { updateColor } from "../services/updateColor";
 
 import { supabase } from "../utils/supabaseClient";
 
-const Adds = ({ data }) => {
+const Adds = ({ data, users }) => {
 	const [currentModels, setCurrentModels] = useState(0);
 	const [phones, setPhones] = useState(data);
 	const [render, setRender] = useState(false);
@@ -82,7 +81,7 @@ const Adds = ({ data }) => {
 			if (e) throw e
 
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -105,7 +104,7 @@ const Adds = ({ data }) => {
 			if (e) throw e
 
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
   
@@ -122,65 +121,33 @@ const Adds = ({ data }) => {
             {filteredPhonesBrands()}
           </HeaderAdds>
 
-					<div className='w-full text-sm text-left text-gray-500'>
+					<div className='w-min text-sm text-left text-gray-500'>
 						<div className='flex flex-wrap tablet:w-[700px] tablet:justify-evenly'>
-							<section className='w-full mb-5 max-w-[330px]'>
-								<div className='flex justify-center items-center 
-                  text-xs text-gray-700 uppercase bg-gray-200
-                  py-3 px-6'
-								>
-									<span>Model</span>
-								</div>
-								<section className='border-x'>
-									{filteredPhonesModel().map((model) => (
-										<RowModelsColors
-											key={v4()}
-											features={model}
-                      deleteTag={deleteTagModel}
-										/>
-									))}
-									<div className='bg-white border-b py-2 px-6'>
-										<form
-											onSubmit={handleSubmit(onSubmitModel)}
-											className='flex items-center justify-center'
-										>
-                      <InputTag register={register("newModel")} />
-										</form>
-									</div>
-								</section>
-							</section>
 
-							<section className='w-full max-w-[330px]'>
-								<div className='flex justify-center items-center 
-                  text-xs text-gray-700 uppercase bg-gray-200
-                  py-3 px-6'
-								>
-									<span>Color</span>
-								</div>
-								<section className='border-x'>
-									{filteredPhonesColor().map((color) => (
-										<RowModelsColors
-											key={v4()}
-											features={color}
-											deleteTag={deleteTagColor}
-										/>
-									))}
-									<div className='bg-white border-b py-2 px-6'>
-										<form
-											onSubmit={handleSubmit(onSubmitColor)}
-											className='flex items-center justify-center'
-										>
-                      <InputTag register={register("newColor")} />
-										</form>
-									</div>
-								</section>
-							</section>
+							<TableResources title={"Model"} filteredPhones={filteredPhonesModel}
+								deleteTag={deleteTagModel}
+								handleSubmit={handleSubmit}
+								onSubmitItem={onSubmitModel}
+								register={register}
+								registerField={"newModel"}
+							/>
+							<TableResources title={"Color"} filteredPhones={filteredPhonesColor}
+								deleteTag={deleteTagColor}
+								handleSubmit={handleSubmit}
+								onSubmitItem={onSubmitColor}
+								register={register}
+								registerField={"newColor"}
+							/>
+
+
 						</div>
 					</div>
 				</section>
 
-        <Toaster />
+				<AddStaff users={users} />
+
 			</section>
+      <Toaster />
 		</Layout>
 	);
 };
@@ -190,9 +157,15 @@ export default Adds
 export async function getServerSideProps() {
 	const data = await getMolds();
 
+	let { data: users, error } = await supabase
+    .from('profiles')
+    .select('*')
+  if (error) throw error
+
 	return {
 		props: {
 			data,
+			users
 		},
 	};
 }

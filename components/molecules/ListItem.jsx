@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import Link from 'next/link'
 
 import { BsStopwatch } from 'react-icons/bs'
