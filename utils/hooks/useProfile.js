@@ -3,7 +3,11 @@ import { useEffect, useState } from "react"
 import { supabase } from "../supabaseClient"
 
 function useProfile() {
-  const [profile, setProfile] = useState({})
+  const [profile, setProfile] = useState([{
+    role: "",
+    userId: "",
+    username: ""
+  }])
 
   const checkingSession = supabase.auth.session()
   
@@ -29,9 +33,6 @@ function useProfile() {
           .catch((error) => {
             alert(error)
           })
-      } else {
-        console.log('no')
-        console.log(checkingSession)
       }
     }, [])
 

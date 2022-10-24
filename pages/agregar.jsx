@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 
+import { useRouter } from "next/router";
+
 import { useForm } from "react-hook-form";
 
-import { toast, Toaster } from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 
 import { v4 } from "uuid";
 
@@ -28,6 +30,9 @@ const Adds = ({ data }) => {
 		setValue,
 		formState: { Error },
 	} = useForm();
+	const router = useRouter()
+
+	const session = supabase.auth.session()
 
 	const filtered = () => {
 		return data.slice(currentModels, currentModels + 1)[0];
@@ -117,17 +122,17 @@ const Adds = ({ data }) => {
 		<Layout>
 			<section className='bg-white rounded-lg p-6 mt-6 self-start'>
 				<section className='flex flex-col items-center'>
-
-          <HeaderAdds onPrev={onPrev} onNext={onNext}>
-            {filteredPhonesBrands()}
-          </HeaderAdds>
-
+	
+					<HeaderAdds onPrev={onPrev} onNext={onNext}>
+						{filteredPhonesBrands()}
+					</HeaderAdds>
+	
 					<div className='w-full text-sm text-left text-gray-500'>
 						<div className='flex flex-wrap tablet:w-[700px] tablet:justify-evenly'>
 							<section className='w-full mb-5 max-w-[330px]'>
 								<div className='flex justify-center items-center 
-                  text-xs text-gray-700 uppercase bg-gray-200
-                  py-3 px-6'
+									text-xs text-gray-700 uppercase bg-gray-200
+									py-3 px-6'
 								>
 									<span>Model</span>
 								</div>
@@ -136,7 +141,7 @@ const Adds = ({ data }) => {
 										<RowModelsColors
 											key={v4()}
 											features={model}
-                      deleteTag={deleteTagModel}
+											deleteTag={deleteTagModel}
 										/>
 									))}
 									<div className='bg-white border-b py-2 px-6'>
@@ -144,16 +149,16 @@ const Adds = ({ data }) => {
 											onSubmit={handleSubmit(onSubmitModel)}
 											className='flex items-center justify-center'
 										>
-                      <InputTag register={register("newModel")} />
+											<InputTag register={register("newModel")} />
 										</form>
 									</div>
 								</section>
 							</section>
-
+	
 							<section className='w-full max-w-[330px]'>
 								<div className='flex justify-center items-center 
-                  text-xs text-gray-700 uppercase bg-gray-200
-                  py-3 px-6'
+									text-xs text-gray-700 uppercase bg-gray-200
+									py-3 px-6'
 								>
 									<span>Color</span>
 								</div>
@@ -170,7 +175,7 @@ const Adds = ({ data }) => {
 											onSubmit={handleSubmit(onSubmitColor)}
 											className='flex items-center justify-center'
 										>
-                      <InputTag register={register("newColor")} />
+											<InputTag register={register("newColor")} />
 										</form>
 									</div>
 								</section>
@@ -178,8 +183,8 @@ const Adds = ({ data }) => {
 						</div>
 					</div>
 				</section>
-
-        <Toaster />
+	
+				<Toaster />
 			</section>
 		</Layout>
 	);

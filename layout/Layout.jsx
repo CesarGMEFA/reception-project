@@ -1,5 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 import { FaRegListAlt } from 'react-icons/fa'
 import { AiOutlineFileAdd } from 'react-icons/ai'
@@ -14,11 +15,13 @@ import ProfileContext from '../utils/context/ProfileContext'
 const Layout = ({children}) => {
 
 	const { profile } = useContext(ProfileContext)
+	const router = useRouter()
 
 	const signOut = async () => {
 		try {
 			const { error } = await supabase.auth.signOut()
 			if (error) throw error
+			router.push('/login')
 
 		} catch (e) {
 			alert(e)
@@ -35,50 +38,66 @@ const Layout = ({children}) => {
           <span className='mx-4 text-2xl cursor-pointer' title='add costumer'><AiOutlineUserAdd /></span>
         </nav> */}
 				<nav className='flex items-center'>
-          <Link href="/">
-            <span
-              className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
-              title='reception list'
-            >
-              <FaRegListAlt />
-            </span>
-          </Link>
-					<Link href="/receipt">
+					<Link href='/'>
 						<span
 							className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
-							title='create receipt'
+							title='lista de recepciones'
+						>
+							<FaRegListAlt />
+						</span>
+					</Link>
+					<Link href='/recepcion'>
+						<span
+							className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
+							title='crear recepcion'
 						>
 							<AiOutlineFileAdd />
 						</span>
 					</Link>
-          <Link href="/client">
-            <span
-              className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
-              title='add costumer'
-            >
-              <AiOutlineUserAdd />
-            </span>
-          </Link>
-					<Link href="/adds">
+					<Link href='/cliente'>
 						<span
 							className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
-							title='employees'
+							title='agregar cliente'
 						>
-							<FaRegAddressCard />
+							<AiOutlineUserAdd />
 						</span>
 					</Link>
-					<span
-						className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
-						title='estadistic'
-					>
-						<AiOutlineBarChart />
-					</span>
+					{/* {
+						session && (
+							<>
+							
+							</>
+						)
+					} */}
+					{profile[0] && (
+						profile[0].role === "admin" && (
+							<>
+							<Link href='/agregar'>
+								<span
+									className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
+									title='data empleo'
+								>
+									<FaRegAddressCard />
+								</span>
+							</Link>
+							<span
+								className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
+								title='análisis'
+							>
+								<AiOutlineBarChart />
+							</span>
+						</>
+						)
+					)}
 				</nav>
 				<section>
-					{ profile[0] && (
+					{profile[0] && (
 						<>
-							<p className='inline-block font-bold'>{profile[0].username} -</p>
-							<button onClick={signOut}
+							<p className='inline-block font-bold'>
+								{profile[0].username} -
+							</p>
+							<button
+								onClick={signOut}
 								className='px-3 py-2.5 ml-1
 								bg-red-600
 								text-white
@@ -92,17 +111,16 @@ const Layout = ({children}) => {
 								focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0
 								transition
 								duration-150'
-								>
+							>
 								Cerrar sesi&oacute;n
 							</button>
 						</>
-					) }
-					{' '}
+					)}{" "}
 				</section>
 			</header>
-      <main className='flex justify-center items-center min-h-[100vh]  px-4 pt-32 pb-12 bg-[#edeced]'>
-        {children}
-      </main>
+			<main className='flex justify-center items-center min-h-[100vh]  px-4 pt-32 pb-12 bg-[#edeced]'>
+				{children}
+			</main>
 		</React.Fragment>
   );
 }
