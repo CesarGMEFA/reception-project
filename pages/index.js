@@ -4,7 +4,6 @@ import Layout from "../layout/Layout"
 
 import List from "../components/List"
 import Empty from "../components/Empty"
-import Auth from "../components/Auth"
 
 import { supabase } from "../utils/supabaseClient"
 
@@ -14,24 +13,13 @@ const Index = ({ allData }) => {
 
   useEffect(() => {
     setSession(supabase.auth.session())
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
   }, [])
 
   return (
-    <Layout>
-      {!session
-       ? <Auth />
-       : (
-          allData.length
-          ? <List allData={allData}/>
-          : <Empty />
-       )
-      }
-    </Layout>
-   )
+		<Layout>
+			{allData.length ? <List allData={allData} /> : <Empty />}
+		</Layout>
+  );
 }
 
 export default Index

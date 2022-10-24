@@ -1,6 +1,8 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useState } from 'react'
 
 import { supabase } from '../utils/supabaseClient'
+
+import Loader from './atom/Loader'
 
 import ProfileContext from '../utils/context/ProfileContext'
 
@@ -29,19 +31,20 @@ const Auth = () => {
       if (error) throw error
       const p = await profileValidation(user.id)
       setProfile(p)
+      setLoading(1)
     } catch (error) {
       alert(error.error_description || error.message)
-      console.error(error)
-    } finally {
       setLoading(false)
+    } finally {
       setEmail("")
       setPassword("")
     }
   }
 
   return (
-		<main>
+		<section className='border-2 border-black' >
 			<section className='bg-white py-4 px-5 flex items-center justify-center flex-col'>
+        <h2 className='text-black font-semibold text-xl mb-1'>Iniciar Sesi&oacute;n</h2>
 				<p className='mb-3 flex justify-center flex-col items-center'>
 					<label htmlFor="emailSignIn" >
 						Email:<br />
@@ -64,7 +67,7 @@ const Auth = () => {
 				</p>
 				<p className='mb-3 flex justify-center flex-col items-center'>
 					<label htmlFor="passwordSignIn" >
-						Password:<br />
+						Contrase&ntilde;a:<br />
 						<input
 							className='col-span-full mobile:col-[1/4] tablet:col-[1/3]
               text-base font-normal text-gray-700
@@ -90,11 +93,11 @@ const Auth = () => {
             className="bg-zinc-600 mx-auto mt-5 px-5 py-2 text-white font-bold cursor-pointer hover:bg-zinc-800 active:bg-black"
             disabled={loading}
           >
-            <span>{loading ? 'Loading' : 'Iniciar'}</span>
+            <span>{loading || loading === 1 ? <Loader /> : 'Iniciar'}</span>
           </button>
         </div>
 			</section>
-		</main>
+		</section>
   );
 }
 

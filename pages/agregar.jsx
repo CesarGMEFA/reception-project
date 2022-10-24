@@ -28,6 +28,10 @@ const Adds = ({ data, users }) => {
 		formState: { Error },
 	} = useForm();
 
+	if (Error) {
+		alert(Error)
+	}
+
 	const filtered = () => {
 		return data.slice(currentModels, currentModels + 1)[0];
 	};
@@ -116,11 +120,11 @@ const Adds = ({ data, users }) => {
 		<Layout>
 			<section className='bg-white rounded-lg p-6 mt-6 self-start'>
 				<section className='flex flex-col items-center'>
-
-          <HeaderAdds onPrev={onPrev} onNext={onNext}>
-            {filteredPhonesBrands()}
-          </HeaderAdds>
-
+	
+					<HeaderAdds onPrev={onPrev} onNext={onNext}>
+						{filteredPhonesBrands()}
+					</HeaderAdds>
+	
 					<div className='w-min text-sm text-left text-gray-500'>
 						<div className='flex flex-wrap tablet:w-[700px] tablet:justify-evenly'>
 

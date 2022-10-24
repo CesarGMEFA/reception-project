@@ -3,8 +3,12 @@ import { useEffect, useState } from "react"
 import { supabase } from "../supabaseClient"
 
 function useProfile() {
-  const [profile, setProfile] = useState({})
   const [event, setEvent] = useState(null)
+  const [profile, setProfile] = useState([{
+    role: "",
+    userId: "",
+    username: ""
+  }])
 
   const session = supabase.auth.session()
     

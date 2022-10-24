@@ -1,4 +1,4 @@
-import React, { useContext, Fragment } from 'react'
+import React, { useContext } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
@@ -13,14 +13,16 @@ import { supabase } from '../utils/supabaseClient'
 import ProfileContext from '../utils/context/ProfileContext'
 
 const Layout = ({children}) => {
-	const { profile, setProfile, session } = useContext(ProfileContext)
+
+	const { profile, setProfile } = useContext(ProfileContext)
 	const router = useRouter()
 
 	const signOut = async () => {
 		try {
 			const { error } = await supabase.auth.signOut()
 			if (error) throw error
-			router.push("/")
+			router.push('/login')
+
 		} catch (e) {
 			alert(e)
 		} finally {
@@ -41,72 +43,73 @@ const Layout = ({children}) => {
 					<Link href='/'>
 						<span
 							className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
-							title='reception list'
+							title='lista de recepciones'
 						>
 							<FaRegListAlt />
 						</span>
 					</Link>
-					<Link href='/receipt'>
+					<Link href='/recepcion'>
 						<span
 							className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
-							title='create receipt'
+							title='crear recepcion'
 						>
 							<AiOutlineFileAdd />
 						</span>
 					</Link>
-					<Link href='/client'>
+					<Link href='/cliente'>
 						<span
 							className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
-							title='add costumer'
+							title='agregar cliente'
 						>
 							<AiOutlineUserAdd />
 						</span>
 					</Link>
-					<Link href='/adds'>
-						<span
-							className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
-							title='employees'
-						>
-							<FaRegAddressCard />
-						</span>
-					</Link>
-					<span
-						className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
-						title='estadistic'
-					>
-						<AiOutlineBarChart />
-					</span>
+					{profile[0] && (
+						profile[0].role === "admin" && (
+							<>
+							<Link href='/agregar'>
+								<span
+									className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
+									title='data empleo'
+								>
+									<FaRegAddressCard />
+								</span>
+							</Link>
+							<span
+								className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
+								title='análisis'
+							>
+								<AiOutlineBarChart />
+							</span>
+						</>
+						)
+					)}
 				</nav>
 				<section>
-					{session && (
-						<Fragment>
-							{profile[0] ? (
-								<Fragment>
-									<p className='inline-block font-bold'>
-										{profile[0].username} -
-									</p>
-									<button
-										onClick={signOut}
-										className='px-3 py-2.5 ml-1
-									bg-red-600
-									text-white
-									font-medium
-									text-xs
-									leading-tight
-									uppercase
-									rounded
-									shadow-md
-									hover:bg-red-700 hover:shadow-lg
-									focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0
-									transition
-									duration-150'
-									>
-										Cerrar sesi&oacute;n
-									</button>
-								</Fragment>
-							) : null
-							}
-						</Fragment>
+					{profile[0] && (
+						<>
+							<p className='inline-block font-bold'>
+								{profile[0].username} -
+							</p>
+							<button
+								onClick={signOut}
+								className='px-3 py-2.5 ml-1
+								bg-red-600
+								text-white
+								font-medium
+								text-xs
+								leading-tight
+								uppercase
+								rounded
+								shadow-md
+								hover:bg-red-700 hover:shadow-lg
+								focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0
+								transition
+								duration-150'
+							>
+								Cerrar sesi&oacute;n
+							</button>
+						</>
 					)}{" "}
 				</section>
 			</header>
