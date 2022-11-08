@@ -75,12 +75,12 @@ const Layout = ({children}) => {
 									<FaRegAddressCard />
 								</span>
 							</Link>
-							<span
+							{/* <span
 								className='mx-2 text-2xl cursor-pointer p-2 rounded hover:bg-gray-300'
 								title='análisis'
 							>
 								<AiOutlineBarChart />
-							</span>
+							</span> */}
 						</>
 						)
 					)}
