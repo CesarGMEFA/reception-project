@@ -1,7 +1,6 @@
 import Layout from '../layout/Layout'
 
 import Inputs from "../components/atom/Inputs"
-import Button from "../components/atom/Button"
 
 import { useForm } from "react-hook-form"
 import { supabase } from '../utils/supabaseClient'

@@ -8,7 +8,7 @@ import ProfileContext from '../utils/context/ProfileContext'
 
 const Auth = () => {
   const [loading, setLoading] = useState(false)
-  const [email, setEmail] = useState('curzaculte@gufum.com')
+  const [email, setEmail] = useState('nmdc.qdejr15@kygur.com')
   const [password, setPassword] = useState('123456')
 
   const { setProfile, profileValidation } = useContext(ProfileContext)
@@ -42,14 +42,14 @@ const Auth = () => {
   }
 
   return (
-		<section class='flex  flex-col items-center'>
-      <section className='w-[243px] border-2 border-black bg-white py-4 px-3 mb-3'>
+		<section className='flex flex-col items-center mobile:flex-row'>
+      <section className='w-[243px] h-[268px] border-2 border-black bg-white py-4 px-3 mb-3 mobile:mb-0 mx-3'>
         <p>
           Cuenta para que ingreses y hagas pruebas es la que aparece ya en los campos de email y contrase&ntilde;a.
         </p>
         <hr />
         <p className='border-b border-black w-min font-bold pt-2'>Email:</p>
-        <p>curzaculte@gufum.com</p>
+        <p>nmdc.qdejr15@kygur.com</p>
         <p className='border-b border-black w-min font-bold pt-2'>Contrase&ntilde;a:</p>
         <p>123456</p>
       </section>
