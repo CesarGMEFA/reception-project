@@ -43,7 +43,7 @@ const ListItem = ({ data }) => {
 					<span className='ml-2'>{dateDelivery}</span>
 				</div>
 				<div className='col-[5/6]  mobile:col-[6] mobile:row-span-1 justify-self-end'>
-					<Link href={`/receipt/${data.id}`}>
+					<Link href={`/recepcion/${data.id}`}>
 						<a target="_blanket">
 							<ImEye className='inline-block mr-2 cursor-pointer' />
 						</a>

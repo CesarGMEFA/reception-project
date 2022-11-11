@@ -235,7 +235,30 @@ const Receipt = ({ clientsPrepared, molds }) => {
 }
 export default Receipt
 
-export async function getStaticProps() {
+// export async function getStaticProps() {
+// 	const a = await getClientsIdentity()
+// 	const m = await getMolds()
+//   return {
+//     props: {
+// 			clientsPrepared: a,
+// 			molds: m
+// 		}
+//   }
+// }
+
+
+export async function getServerSideProps({ req }) {
+  const { user } = await supabase.auth.api.getUserByCookie(req)
+
+  if (!user) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    }
+  }
+
 	const a = await getClientsIdentity()
 	const m = await getMolds()
   return {
@@ -244,4 +267,5 @@ export async function getStaticProps() {
 			molds: m
 		}
   }
+
 }

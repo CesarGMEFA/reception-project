@@ -11,10 +11,13 @@ const MyApp = ({ Component, pageProps }) => {
 
   return (
     <ProfileContext.Provider value={useProfile()}>
-      <ProtectedRoutes router={router}>
-        <Component {...pageProps} />
-      </ProtectedRoutes>
+      <Component {...pageProps} />
     </ProfileContext.Provider>
   )
 }
 export default MyApp
+    // <ProfileContext.Provider value={useProfile()}>
+    //   <ProtectedRoutes router={router}>
+    //     <Component {...pageProps} />
+    //   </ProtectedRoutes>
+    // </ProfileContext.Provider>

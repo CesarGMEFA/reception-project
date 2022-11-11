@@ -158,7 +158,18 @@ const Adds = ({ data, users }) => {
 
 export default Adds
 
-export async function getServerSideProps() {
+export async function getServerSideProps({ req }) {
+	const { user } = await supabase.auth.api.getUserByCookie(req)
+
+  if (!user) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    }
+  }
+	
 	const data = await getMolds();
 
 	let { data: users, error } = await supabase

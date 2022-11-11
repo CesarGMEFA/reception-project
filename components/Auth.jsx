@@ -32,11 +32,11 @@ const Auth = () => {
       const p = await profileValidation(user.id)
       setProfile(p)
       setLoading(1)
-			window.location.href = '/'
     } catch (error) {
       alert(error.error_description || error.message)
       setLoading(false)
     } finally {
+			console.log('listo')
       setEmail("")
       setPassword("")
     }

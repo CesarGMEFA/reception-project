@@ -3,9 +3,10 @@ import Layout from '../layout/Layout'
 import Inputs from "../components/atom/Inputs"
 
 import { useForm } from "react-hook-form"
-import { supabase } from '../utils/supabaseClient'
 import { useState } from 'react'
 import Loader from '../components/atom/Loader'
+
+import { supabase } from '../utils/supabaseClient'
 
 const Client = () => {
   const [loadingAddUser, setLoadingAddUser] = useState(false)
@@ -125,3 +126,18 @@ const Client = () => {
 }
 
 export default Client
+
+
+export async function getServerSideProps({ req }) {
+  const { user } = await supabase.auth.api.getUserByCookie(req)
+
+  if (!user) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    }
+  }
+
+}
