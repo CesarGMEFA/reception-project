@@ -1,5 +1,5 @@
-import { Fragment, useContext, useState } from 'react'
-
+import { useContext, useState } from 'react'
+import { useRouter } from 'next/router'
 import { supabase } from '../utils/supabaseClient'
 
 import Loader from './atom/Loader'
@@ -12,7 +12,7 @@ const Auth = () => {
   const [password, setPassword] = useState('123456')
 
   const { setProfile, profileValidation } = useContext(ProfileContext)
-
+	const router = useRouter()
   const changeEmail = (e) => {
     setEmail(e.target.value)
   }
@@ -32,6 +32,7 @@ const Auth = () => {
       const p = await profileValidation(user.id)
       setProfile(p)
       setLoading(1)
+			window.location.href = '/'
     } catch (error) {
       alert(error.error_description || error.message)
       setLoading(false)

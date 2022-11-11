@@ -24,7 +24,18 @@ const Index = ({ allData }) => {
 
 export default Index
 
-export async function getServerSideProps() {
+export async function getServerSideProps({ req }) {
+  const { user } = await supabase.auth.api.getUserByCookie(req)
+
+  if (!user) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    }
+  }
+
   let { data: receptions, error } = await supabase
         .from('receptions')
         .select('*')
