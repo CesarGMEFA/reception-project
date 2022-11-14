@@ -1,11 +1,14 @@
-import Layout from '../layout/Layout'
+import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs'
 
-import Inputs from "../components/atom/Inputs"
+import Layout from '../../layout/Layout'
+
+import Inputs from "../../components/atom/Inputs"
 
 import { useForm } from "react-hook-form"
-import { supabase } from '../utils/supabaseClient'
 import { useState } from 'react'
-import Loader from '../components/atom/Loader'
+import Loader from '../../components/atom/Loader'
+
+import { supabase } from '../../utils/supabaseClient'
 
 const Client = () => {
   const [loadingAddUser, setLoadingAddUser] = useState(false)
@@ -125,3 +128,29 @@ const Client = () => {
 }
 
 export default Client
+
+
+export async function getServerSideProps(ctx) {
+  const s = createServerSupabaseClient(ctx)
+
+  const {
+    data: { session }
+  } = await s.auth.getSession()
+
+  console.log('cliente => ', session)
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    }
+  }
+
+  return {
+    props: {
+
+    }
+  }
+
+}

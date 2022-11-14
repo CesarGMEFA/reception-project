@@ -22,13 +22,20 @@ const ProtectedRoutes = ({router, children}) => {
   
   let pathIsProtected = unprotectedRoutes.indexOf(router.pathname) === -1;
   
-  if (isBrowser() && !session && !pathIsProtected) {
-    router.push("/login")
-  } else if (isBrowser() && session && router.pathname === "/login") {
-    router.back()
-  } else if (isBrowser() && session && profile[0].role === "asistente" && router.pathname === appRoute.AGREGAR) {
-     router.back()
-  }
+  // if (isBrowser() && session && router.pathname === "/login") {
+  //   router.back()
+  // } else if (isBrowser() && session && profile[0].role === "asistente" && router.pathname === appRoute.AGREGAR) {
+  //    router.back()
+  // } else if (isBrowser() && session && router.pathname === "/") {
+  //   router.push("/")
+  // }
+  // if (isBrowser() && !session && !(pathIsProtected !== -1)) {
+  //   router.push("/login")
+  // } else if (isBrowser() && session && router.pathname === "/login") {
+  //   router.back()
+  // } else if (isBrowser() && session && profile[0].role === "asistente" && router.pathname === appRoute.AGREGAR) {
+  //    router.back()
+  // }
   
   return children
 };

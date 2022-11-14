@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import Layout from "../layout/Layout"
+import Layout from "../../layout/Layout"
 
 export default function error404(){
   return (

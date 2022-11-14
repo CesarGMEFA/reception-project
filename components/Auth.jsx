@@ -1,18 +1,21 @@
-import { Fragment, useContext, useState } from 'react'
-
-import { supabase } from '../utils/supabaseClient'
+import { useContext, useState } from 'react'
+import { useRouter } from 'next/router'
+// import { supabase } from '../utils/supabaseClient'
+import { useSupabaseClient } from '@supabase/auth-helpers-react/dist'
 
 import Loader from './atom/Loader'
 
 import ProfileContext from '../utils/context/ProfileContext'
+import { FaLessThanEqual } from 'react-icons/fa'
 
 const Auth = () => {
+	const supabase = useSupabaseClient()
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState('nmdc.qdejr15@kygur.com')
   const [password, setPassword] = useState('123456')
 
   const { setProfile, profileValidation } = useContext(ProfileContext)
-
+	const router = useRouter()
   const changeEmail = (e) => {
     setEmail(e.target.value)
   }
@@ -24,10 +27,10 @@ const Auth = () => {
   const handleLogin = async (email) => {
     try {
       setLoading(true)
-      const { user, session, error } = await supabase.auth.signIn({
-        email,
-        password
-      })
+			const {
+				data: { user },
+				error,
+			} = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
       const p = await profileValidation(user.id)
       setProfile(p)
@@ -36,8 +39,9 @@ const Auth = () => {
       alert(error.error_description || error.message)
       setLoading(false)
     } finally {
-      setEmail("")
-      setPassword("")
+			console.log('listo')
+			router.push("/")
+			setLoading(false)
     }
   }
 
