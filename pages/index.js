@@ -1,4 +1,7 @@
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs"
+
 import { useState, useEffect } from "react"
+import { useRouter } from "next/router"
 
 import Layout from "../layout/Layout"
 
@@ -8,12 +11,22 @@ import Empty from "../components/Empty"
 import { supabase } from "../utils/supabaseClient"
 
 const Index = ({ allData }) => {
-
+  const router = useRouter()
   const [session, setSession] = useState(null)
 
   useEffect(() => {
-    setSession(supabase.auth.session())
+    (async() => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      setSession(session)
+    })();
+    if(!!session) {
+      router.push("/login")      
+      return
+    }
   }, [])
+
 
   return (
 		<Layout>
@@ -24,17 +37,25 @@ const Index = ({ allData }) => {
 
 export default Index
 
-export async function getServerSideProps({ req }) {
-  const { user } = await supabase.auth.api.getUserByCookie(req)
+export async function getServerSideProps(ctx) {
+  
+  // const s = createServerSupabaseClient(ctx)
+  
+  // const {
+  //   data: { session }
+  // } = await s.auth.getSession()
 
-  if (!user) {
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    }
-  }
+  // console.log('index => ', session)
+
+  // if (!session) {
+  //   return {
+  //     redirect: {
+  //       destination: '/login',
+  //       permanent: false,
+  //     },
+  //   }
+  // }
+
 
   let { data: receptions, error } = await supabase
         .from('receptions')

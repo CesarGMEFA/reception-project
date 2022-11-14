@@ -1,21 +1,23 @@
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+
 import { useEffect, useState } from "react";
 
 import { useForm } from "react-hook-form";
 
 import { Toaster } from 'react-hot-toast'
 
-import Layout from "../layout/Layout";
+import Layout from "../../layout/Layout";
 
-import HeaderAdds from "../components/molecules/HeaderAdds";
+import HeaderAdds from "../../components/molecules/HeaderAdds";
 
-import TableResources from "../components/organisms/TableResources";
-import AddStaff from "../components/organisms/AddStaff";
+import TableResources from "../../components/organisms/TableResources";
+import AddStaff from "../../components/organisms/AddStaff";
 
-import { getMolds } from "../services/getMolds";
-import { updateModel } from "../services/updateModel";
-import { updateColor } from "../services/updateColor";
+import { getMolds } from "../../services/getMolds";
+import { updateModel } from "../../services/updateModel";
+import { updateColor } from "../../services/updateColor";
 
-import { supabase } from "../utils/supabaseClient";
+import { supabase } from "../../utils/supabaseClient";
 
 const Adds = ({ data, users }) => {
 	const [currentModels, setCurrentModels] = useState(0);
@@ -158,10 +160,16 @@ const Adds = ({ data, users }) => {
 
 export default Adds
 
-export async function getServerSideProps({ req }) {
-	const { user } = await supabase.auth.api.getUserByCookie(req)
+export async function getServerSideProps(ctx) {
+	const s = createServerSupabaseClient(ctx)
 
-  if (!user) {
+  const {
+    data: { session }
+  } = await s.auth.getSession()
+
+  console.log('agregar => ', session)
+
+  if (!session) {
     return {
       redirect: {
         destination: '/login',

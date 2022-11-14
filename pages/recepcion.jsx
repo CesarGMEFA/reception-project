@@ -1,3 +1,5 @@
+import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs'
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { useForm } from "react-hook-form"
@@ -235,22 +237,17 @@ const Receipt = ({ clientsPrepared, molds }) => {
 }
 export default Receipt
 
-// export async function getStaticProps() {
-// 	const a = await getClientsIdentity()
-// 	const m = await getMolds()
-//   return {
-//     props: {
-// 			clientsPrepared: a,
-// 			molds: m
-// 		}
-//   }
-// }
 
+export async function getServerSideProps(ctx) {
+  const s = createServerSupabaseClient(ctx)
 
-export async function getServerSideProps({ req }) {
-  const { user } = await supabase.auth.api.getUserByCookie(req)
+	const {
+    data: { session }
+  } = await s.auth.getSession()
 
-  if (!user) {
+  console.log('recepcion => ', session)
+
+  if (!session) {
     return {
       redirect: {
         destination: '/login',

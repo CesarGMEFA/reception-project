@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { supabase } from "../supabaseClient"
 
 function useProfile() {
+  const [session, setSession] = useState(null)
   const [event, setEvent] = useState(null)
   const [profile, setProfile] = useState([{
     role: "",
@@ -10,7 +11,7 @@ function useProfile() {
     username: ""
   }])
 
-  const session = supabase.auth.session()
+  // const session = supabase.auth.session()
     
   supabase.auth.onAuthStateChange( (event, _session) => {
     setEvent(event)
@@ -31,12 +32,21 @@ function useProfile() {
 
   useEffect(() => {
     (async() => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      setSession(session)
+    })();
+  }, [])
+
+  useEffect(() => {
+    (async() => {
       if (session) {
         const p = await profileValidation(session.user.id)
         setProfile(p)
       }
     })()
-  }, [])
+  }, [session])
 
   return {
     profile,
