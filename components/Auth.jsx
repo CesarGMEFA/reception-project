@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react'
 import { useRouter } from 'next/router'
-import { supabase } from '../utils/supabaseClient'
+// import { supabase } from '../utils/supabaseClient'
+import { useSupabaseClient } from '@supabase/auth-helpers-react/dist'
 
 import Loader from './atom/Loader'
 
@@ -8,6 +9,7 @@ import ProfileContext from '../utils/context/ProfileContext'
 import { FaLessThanEqual } from 'react-icons/fa'
 
 const Auth = () => {
+	const supabase = useSupabaseClient()
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState('nmdc.qdejr15@kygur.com')
   const [password, setPassword] = useState('123456')
@@ -40,8 +42,6 @@ const Auth = () => {
 			console.log('listo')
 			router.push("/")
 			setLoading(false)
-      setEmail("")
-      setPassword("")
     }
   }
 

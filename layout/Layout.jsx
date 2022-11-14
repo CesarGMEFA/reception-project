@@ -8,12 +8,13 @@ import { AiOutlineUserAdd } from 'react-icons/ai'
 import { FaRegAddressCard } from 'react-icons/fa'
 import { AiOutlineBarChart } from 'react-icons/ai'
 
-import { supabase } from '../utils/supabaseClient'
+// import { supabase } from '../utils/supabaseClient'
+import { useSupabaseClient } from '@supabase/auth-helpers-react/dist'
 
 import ProfileContext from '../utils/context/ProfileContext'
 
 const Layout = ({children}) => {
-
+	const supabase = useSupabaseClient()
 	const { profile, setProfile } = useContext(ProfileContext)
 	const router = useRouter()
 

@@ -14,18 +14,18 @@ const Index = ({ allData }) => {
   const router = useRouter()
   const [session, setSession] = useState(null)
 
-  useEffect(() => {
-    (async() => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      setSession(session)
-    })();
-    if(!!session) {
-      router.push("/login")      
-      return
-    }
-  }, [])
+  // useEffect(() => {
+  //   (async() => {
+  //     const {
+  //       data: { session },
+  //     } = await supabase.auth.getSession()
+  //     setSession(session)
+  //   })();
+  //   if(!!session) {
+  //     router.push("/login")      
+  //     return
+  //   }
+  // }, [])
 
 
   return (
@@ -37,24 +37,23 @@ const Index = ({ allData }) => {
 
 export default Index
 
-export async function getServerSideProps(ctx) {
+export const getServerSideProps = async (ctx) => {
+  const s = createServerSupabaseClient(ctx)
   
-  // const s = createServerSupabaseClient(ctx)
-  
-  // const {
-  //   data: { session }
-  // } = await s.auth.getSession()
+  const {
+    data: { session }
+  } = await s.auth.getSession()
 
-  // console.log('index => ', session)
+  console.log('index => ', session)
 
-  // if (!session) {
-  //   return {
-  //     redirect: {
-  //       destination: '/login',
-  //       permanent: false,
-  //     },
-  //   }
-  // }
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    }
+  }
 
 
   let { data: receptions, error } = await supabase

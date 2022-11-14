@@ -5,26 +5,28 @@ import { useRouter } from "next/router"
 import Auth from "../../components/Auth"
 import { supabase } from "../../utils/supabaseClient"
 
-export default function login() {
+export default function login({initialSession}) {
   const [session, setSession] = useState()
   const router = useRouter()
   
-  useEffect(() => {
-    (async() => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      setSession(session)
-    })();
-
-  }, [])
+  console.log(initialSession)
   
-  useEffect(() => {
-    if (session) {
-      router.push('/')
-      return
-    }
-  }, [session])
+  // useEffect(() => {
+  //   (async() => {
+  //     const {
+  //       data: { session },
+  //     } = await supabase.auth.getSession()
+  //     setSession(session)
+  //   })();
+
+  // }, [])
+  
+  // useEffect(() => {
+  //   if (session) {
+  //     router.push('/')
+  //     return
+  //   }
+  // }, [session])
 
   
   return (
@@ -34,12 +36,14 @@ export default function login() {
   )
 }
 
-export async function getServerSideProps(ctx) {
-  // const s = createServerSupabaseClient(ctx)
+export const getServerSideProps = async (ctx) => {
+  const s = createServerSupabaseClient(ctx)
 
-  // const {
-  //   data: { session }
-  // } = await s.auth.getSession()
+  const {
+    data: { session }
+  } = await s.auth.getSession()
+
+  console.log(session)
 
   // let a = await s.auth.getSession()
 
@@ -47,18 +51,18 @@ export async function getServerSideProps(ctx) {
   
   // console.log('login => ', session)
   
-  // if (session) {
-  //   return {
-  //     redirect: {
-  //       destination: '/',
-  //       permanent: false,
-  //     },
-  //   }
-  // }
-  // const z = JSON.stringify(s)
+  if (session) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
+  }
+
   return {
     props: {
-      // z
+      initialSession: session
 		}
   }
 
