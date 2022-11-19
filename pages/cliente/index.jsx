@@ -1,16 +1,19 @@
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs'
 
+import { useState, useContext, useEffect } from 'react'
+import { useForm } from "react-hook-form"
+
 import Layout from '../../layout/Layout'
 
 import Inputs from "../../components/atom/Inputs"
-
-import { useForm } from "react-hook-form"
-import { useState } from 'react'
 import Loader from '../../components/atom/Loader'
+
+import ProfileContext from '../../utils/context/ProfileContext'
 
 import { supabase } from '../../utils/supabaseClient'
 
-const Client = () => {
+const Client = ({ profile: p }) => {
+  const { setProfile } = useContext(ProfileContext)
   const [loadingAddUser, setLoadingAddUser] = useState(false)
   const { register, handleSubmit, formState: {error} } = useForm()
 
@@ -43,6 +46,10 @@ const Client = () => {
     }
   }
   if (error) throw error
+
+  useEffect(() => {
+    setProfile(p)
+  }, [])
 
   return (
 		<Layout>
@@ -137,7 +144,6 @@ export async function getServerSideProps(ctx) {
     data: { session }
   } = await s.auth.getSession()
 
-  console.log('cliente => ', session)
   if (!session) {
     return {
       redirect: {
@@ -147,9 +153,14 @@ export async function getServerSideProps(ctx) {
     }
   }
 
+  let { data: profile, error: e } = await s
+	  .from('profiles')
+	  .select('*')
+	  .eq('userId', session.user.id)
+  if (e) throw e
   return {
     props: {
-
+      profile
     }
   }
 

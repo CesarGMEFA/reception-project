@@ -1,6 +1,6 @@
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { useRouter } from 'next/router'
 import { useForm } from "react-hook-form"
 import { Toaster } from 'react-hot-toast'
@@ -32,7 +32,11 @@ import { supabase } from '../utils/supabaseClient'
 import { getClientsIdentity } from '../services/getClients'
 import { getMolds } from '../services/getMolds'
 
-const Receipt = ({ clientsPrepared, molds }) => {
+// context
+import ProfileContext from '../utils/context/ProfileContext'
+
+const Receipt = ({ clientsPrepared, molds, profile: p }) => {
+	const { setProfile } = useContext(ProfileContext)
 	const [search, setSearch] = useState('')
 	const [loadingSearch, setLoadingSearch] = useState(false)
 	const [loadingCreate, setLoadingCreate] = useState(false)
@@ -160,6 +164,10 @@ const Receipt = ({ clientsPrepared, molds }) => {
 		}
 	}, [userSelected])
 
+	useEffect(() => {
+		setProfile(p)
+	}, [])
+
   return (
 		<Layout>
 			<section className='bg-white rounded-lg p-6'>
@@ -258,10 +266,18 @@ export async function getServerSideProps(ctx) {
 
 	const a = await getClientsIdentity()
 	const m = await getMolds()
+
+	let { data: profile, error: e } = await s
+	  .from('profiles')
+	  .select('*')
+	  .eq('userId', session.user.id)
+		if (e) throw e
+
   return {
     props: {
 			clientsPrepared: a,
-			molds: m
+			molds: m,
+			profile
 		}
   }
 

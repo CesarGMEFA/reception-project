@@ -8,7 +8,6 @@ import { AiOutlineUserAdd } from 'react-icons/ai'
 import { FaRegAddressCard } from 'react-icons/fa'
 import { AiOutlineBarChart } from 'react-icons/ai'
 
-// import { supabase } from '../utils/supabaseClient'
 import { useSupabaseClient } from '@supabase/auth-helpers-react/dist'
 
 import ProfileContext from '../utils/context/ProfileContext'
@@ -94,19 +93,10 @@ const Layout = ({children}) => {
 							</p>
 							<button
 								onClick={signOut}
-								className='px-3 py-2.5 ml-1
-								bg-red-600
-								text-white
-								font-medium
-								text-xs
-								leading-tight
-								uppercase
-								rounded
-								shadow-md
-								hover:bg-red-700 hover:shadow-lg
+								className='px-3 py-2.5 ml-1 bg-red-600 text-white font-medium text-xs leading-tight 
+								uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg
 								focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0
-								transition
-								duration-150'
+								transition duration-150'
 							>
 								Cerrar sesi&oacute;n
 							</button>

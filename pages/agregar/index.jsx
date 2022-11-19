@@ -1,6 +1,6 @@
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 
 import { useForm } from "react-hook-form";
 
@@ -13,13 +13,16 @@ import HeaderAdds from "../../components/molecules/HeaderAdds";
 import TableResources from "../../components/organisms/TableResources";
 import AddStaff from "../../components/organisms/AddStaff";
 
+import ProfileContext from "../../utils/context/ProfileContext";
+
 import { getMolds } from "../../services/getMolds";
 import { updateModel } from "../../services/updateModel";
 import { updateColor } from "../../services/updateColor";
 
 import { supabase } from "../../utils/supabaseClient";
 
-const Adds = ({ data, users }) => {
+const Adds = ({ data, users, profile: p }) => {
+	const { setProfile } = useContext(ProfileContext)
 	const [currentModels, setCurrentModels] = useState(0);
 	const [phones, setPhones] = useState(data);
 	const [render, setRender] = useState(false);
@@ -118,6 +121,10 @@ const Adds = ({ data, users }) => {
 		filtered();
 	}, [render]);
 
+	useEffect(() => {
+		setProfile(p)
+	}, []);
+
 	return (
 		<Layout>
 			<section className='bg-white rounded-lg p-6 mt-6 self-start'>
@@ -167,28 +174,42 @@ export async function getServerSideProps(ctx) {
     data: { session }
   } = await s.auth.getSession()
 
-  console.log('agregar => ', session)
-
+	
   if (!session) {
-    return {
-      redirect: {
-        destination: '/login',
+		return {
+			redirect: {
+				destination: '/login',
         permanent: false,
       },
     }
   }
 	
 	const data = await getMolds();
-
+	
 	let { data: users, error } = await supabase
-    .from('profiles')
-    .select('*')
+	.from('profiles')
+	.select('*')
   if (error) throw error
-
+	
+	let { data: profile, error: e } = await supabase
+	.from('profiles')
+	.select('*')
+	.eq('userId', session.user.id)
+  if (e) throw e
+	
+  if (profile[0].role === "asistente") {
+		return {
+			redirect: {
+				destination: '/',
+        permanent: false,
+      },
+    }
+  }
 	return {
 		props: {
 			data,
-			users
+			users,
+			profile
 		},
 	};
 }

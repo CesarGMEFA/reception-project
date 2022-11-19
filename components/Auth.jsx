@@ -1,6 +1,5 @@
 import { useContext, useState } from 'react'
 import { useRouter } from 'next/router'
-// import { supabase } from '../utils/supabaseClient'
 import { useSupabaseClient } from '@supabase/auth-helpers-react/dist'
 
 import Loader from './atom/Loader'
@@ -39,7 +38,6 @@ const Auth = () => {
       alert(error.error_description || error.message)
       setLoading(false)
     } finally {
-			console.log('listo')
 			router.push("/")
 			setLoading(false)
     }

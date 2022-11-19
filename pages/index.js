@@ -1,32 +1,20 @@
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/router"
+import { useEffect, useContext } from "react"
 
 import Layout from "../layout/Layout"
 
 import List from "../components/List"
 import Empty from "../components/Empty"
 
-import { supabase } from "../utils/supabaseClient"
+import ProfileContext from "../utils/context/ProfileContext"
 
-const Index = ({ allData }) => {
-  const router = useRouter()
-  const [session, setSession] = useState(null)
+const Index = ({ allData, profile: p }) => {
+  const { setProfile } = useContext(ProfileContext)
 
-  // useEffect(() => {
-  //   (async() => {
-  //     const {
-  //       data: { session },
-  //     } = await supabase.auth.getSession()
-  //     setSession(session)
-  //   })();
-  //   if(!!session) {
-  //     router.push("/login")      
-  //     return
-  //   }
-  // }, [])
-
+  useEffect(() => {
+    setProfile(p)
+  }, [])
 
   return (
 		<Layout>
@@ -38,11 +26,11 @@ const Index = ({ allData }) => {
 export default Index
 
 export const getServerSideProps = async (ctx) => {
-  const s = createServerSupabaseClient(ctx)
+  const supabase = createServerSupabaseClient(ctx)
   
   const {
     data: { session }
-  } = await s.auth.getSession()
+  } = await supabase.auth.getSession()
 
   console.log('index => ', session)
 
@@ -55,15 +43,22 @@ export const getServerSideProps = async (ctx) => {
     }
   }
 
-
   let { data: receptions, error } = await supabase
         .from('receptions')
         .select('*')
         .order('id', { ascending: false })
   if (error) throw error
+
+  let { data: profile, error: e } = await supabase
+	  .from('profiles')
+	  .select('*')
+	  .eq('userId', session.user.id)
+  if (e) throw e;
+
   return {
     props: {
-      allData: receptions
+      allData: receptions,
+      profile
     },
   };
 }
