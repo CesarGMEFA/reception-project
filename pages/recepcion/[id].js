@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useContext } from "react"
 import { useReactToPrint } from 'react-to-print'
-import { format } from "date-fns"
 import { v4 } from "uuid"
 import { useForm } from "react-hook-form"
 import { Toaster } from "react-hot-toast"
@@ -22,20 +21,33 @@ import { getDataId, getPaths } from '../../services/getPaths'
 // Utils
 import { formatDate } from "../../utils/formatDate"
 import { notifySucess, notifyError } from '../../utils/notify'
-import { supabase } from "../../utils/supabaseClient"
+import { useSupabaseClient } from "@supabase/auth-helpers-react/dist"
+import ProfileContext from "../../utils/context/ProfileContext"
+
 
 const ReceiptIdPage = ({ receipt }) => {
+	const supabase = useSupabaseClient()
+	
 	const [pieces, setPieces] = useState("Sin accesorios")
 	const [services, setServices] = useState([])
 	const [notes, setNotes] = useState([])
 	const [loading, setLoading] = useState(false)
 	const [total, setTotal] = useState(0)
+	const { setProfile, profileValidation } = useContext(ProfileContext)
 
 	const { register, handleSubmit, setValue, formState: {error: errorForm} } = useForm()
 	
 	const data = receipt.data
   
 	useEffect(() => {
+		const dataSessionUser = sessionStorage.getItem("sessionUser")
+		if (dataSessionUser) {
+			const user = JSON.parse(dataSessionUser)
+			
+			profileValidation(user.id)
+				.then( res => setProfile(res))
+				.catch(error => console.error(error))
+		}
 
 		if (data.pieces) {
 			let p = data.pieces.filter( item => item !== null).join(' / ')
@@ -60,10 +72,6 @@ const ReceiptIdPage = ({ receipt }) => {
 			.then( (value) => setNotes(value))
 			.catch( error => console.error(error))
 	}, [])
-
-	useEffect(() => {
-		console.log('notes', notes)
-	}, [notes])
 
 	const onSubmit = async ( d ) => {
 		try {
@@ -171,7 +179,7 @@ export default ReceiptIdPage
 
 export async function getStaticPaths() {
 	const paths = await getPaths()
-	
+
 	return {
 		paths,
 		fallback: false,

@@ -33,6 +33,7 @@ const Auth = () => {
       if (error) throw error
       const p = await profileValidation(user.id)
       setProfile(p)
+			sessionStorage.setItem("sessionUser", JSON.stringify(user))
       setLoading(1)
     } catch (error) {
       alert(error.error_description || error.message)

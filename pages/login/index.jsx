@@ -1,9 +1,6 @@
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/router"
 import Auth from "../../components/Auth"
-import { supabase } from "../../utils/supabaseClient"
 
 export default function login() {
 

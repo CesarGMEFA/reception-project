@@ -42,17 +42,13 @@ const ListItem = ({ data }) => {
 					<BsStopwatch className='inline-block' />
 					<span className='ml-2'>{dateDelivery}</span>
 				</div>
-				<div className='col-[5/6]  mobile:col-[6] mobile:row-span-1 justify-self-end'>
+				<div className='underline col-[5/6]  mobile:col-[6] mobile:row-span-1 justify-self-end'>
 					<Link href={`/recepcion/${data.id}`}>
-						<a target="_blanket">
+						<a target="_blanket" className='hover:text-blue-800 ml-2'>
+							<span className='mr-2'>
+								ver
+							</span>
 							<ImEye className='inline-block mr-2 cursor-pointer' />
-						</a>
-					</Link>
-					<Link href={`/print/${data.id}`}>
-						<a target="_blanket">
-							<AiOutlineFilePdf className='inline-block cursor-pointer' >
-								
-							</AiOutlineFilePdf>
 						</a>
 					</Link>
 				</div>
